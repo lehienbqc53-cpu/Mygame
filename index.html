@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎯 Game QC - Phân biệt Bánh Đạt / Bánh Lỗi</title>
+  <title>🎯 Love your consumer</title>
   <style>
     body {
       font-family: "Segoe UI", Arial, sans-serif;
@@ -76,7 +76,7 @@
 
   <h1>🏭 Trò chơi QC - Phân biệt Bánh Đạt / Bánh Lỗi</h1>
   <div id="game-container">
-    <div id="timer">Thời gian: 30s</div>
+    <div id="timer">Thời gian: 10s</div>
     <img id="biscuitImage" src="images/Banh_Dat.png?v=1" alt="Ảnh bánh">
     <div>
       <button onclick="checkAnswer(true)">✅ Bánh Đạt</button>
@@ -124,7 +124,7 @@
     let current = 0;
     let score = 0;
     let answered = false;
-    let timeLeft = 30;
+    let timeLeft = 10;
     let timerInterval;
 
     const imgElement = document.getElementById("biscuitImage");
@@ -207,7 +207,7 @@
       document.getElementById("errorSelect").value = "";
       answered = false;
       clearInterval(timerInterval);
-      timeLeft = 30; // thời gian cho mỗi câu hỏi
+      timeLeft = 10; // thời gian cho mỗi câu hỏi
       startTimer();
     }
 
@@ -231,3 +231,4 @@
 
 </body>
 </html>
+
