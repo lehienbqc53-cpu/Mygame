@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎯 Game QC - Phân biệt Bánh Đạt / Bánh Lỗi</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(120deg, #fff8dc, #ffe4e6);
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #6d28d9;
+      margin-bottom: 10px;
+    }
+    #game-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      display: inline-block;
+      padding: 20px;
+      max-width: 500px;
+      width: 100%;
+    }
+    img {
+      max-width: 100%;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      margin: 5px;
+      background-color: #7c3aed;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #5b21b6;
+    }
+    select {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 80%;
+      margin-top: 5px;
+      margin-bottom: 10px;
+    }
+    #result {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+    #score {
+      font-size: 18px;
+      font-weight: bold;
+      color: #16a34a;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🏭 Trò chơi QC - Phân biệt Bánh Đạt / Bánh Lỗi</h1>
+  <div id="game-container">
+    <img id="biscuitImage" src="Banh_Dat.png" alt="Ảnh bánh">
+    <div>
+      <button onclick="checkAnswer(true)">✅ Bánh Đạt</button>
+      <button onclick="checkAnswer(false)">❌ Bánh Lỗi</button>
+    </div>
+
+    <div id="errorSection" style="display:none;">
+      <p>Chọn loại lỗi của bánh:</p>
+      <select id="errorSelect">
+        <option value="">-- Chọn loại lỗi --</option>
+        <option value="dinh_nhau">Bánh dính nhau</option>
+        <option value="khuyet">Bánh khuyết</option>
+        <option value="cong_dau">Bánh cong đầu</option>
+        <option value="khong_dau_trang">Bánh không dầu / bánh trắng</option>
+      </select>
+      <br>
+      <button onclick="submitError()">Xác nhận lỗi</button>
+    </div>
+
+    <div id="result"></div>
+    <div id="score">Điểm: 0</div>
+    <br>
+    <button onclick="nextImage()">👉 Ảnh tiếp theo</button>
+  </div>
+
+  <script>
+    const images = [
+      { src: "Banh_Dat.PNG", isGood: true },
+      { src: "Banh_Loi_Dinh_Nhau.PNG", isGood: false, correctError: "dinh_nhau" },
+      { src: "Banh_Loi_Khong_Dau.PNG", isGood: false, correctError: "khong_dau_trang" },
+      { src: "Banh_Khuyet.PNG", isGood: false, correctError: "khuyet" },
+      { src: "Banh_Loi_Cong_Dau.PNG", isGood: false, correctError: "cong_dau" }
+    ];
+
+    let current = 0;
+    let score = 0;
+    let answered = false;
+
+    const imgElement = document.getElementById("biscuitImage");
+    const resultElement = document.getElementById("result");
+    const errorSection = document.getElementById("errorSection");
+    const scoreElement = document.getElementById("score");
+
+    function checkAnswer(isGoodSelected) {
+      if (answered) return;
+      const currentImg = images[current];
+      if (currentImg.isGood && isGoodSelected) {
+        resultElement.textContent = "🎉 Chính xác! Đây là bánh đạt!";
+        score++;
+        scoreElement.textContent = "Điểm: " + score;
+        answered = true;
+        errorSection.style.display = "none";
+      } else if (!currentImg.isGood && !isGoodSelected) {
+        resultElement.textContent = "❗ Đúng rồi, đây là bánh lỗi. Hãy chọn loại lỗi!";
+        errorSection.style.display = "block";
+      } else {
+        resultElement.textContent = "❌ Sai rồi, hãy thử lại!";
+        errorSection.style.display = "none";
+      }
+    }
+
+    function submitError() {
+      const selected = document.getElementById("errorSelect").value;
+      const currentImg = images[current];
+      if (!selected) {
+        resultElement.textContent = "⚠️ Hãy chọn loại lỗi trước!";
+        return;
+      }
+      if (selected === currentImg.correctError) {
+        resultElement.textContent = "✅ Chính xác! Bạn đã xác định đúng loại lỗi.";
+        score++;
+        scoreElement.textContent = "Điểm: " + score;
+      } else {
+        resultElement.textContent = "❌ Sai rồi, hãy xem lại loại lỗi nhé.";
+      }
+      answered = true;
+      errorSection.style.display = "none";
+    }
+
+    function nextImage() {
+      if (current < images.length - 1) {
+        current++;
+        loadImage();
+      } else {
+        showFinalScore();
+      }
+    }
+
+    function loadImage() {
+      const currentImg = images[current];
+      imgElement.src = currentImg.src;
+      resultElement.textContent = "";
+      errorSection.style.display = "none";
+      document.getElementById("errorSelect").value = "";
+      answered = false;
+    }
+
+    function showFinalScore() {
+      document.getElementById("game-container").innerHTML = `
+        <h2>🎉 Bạn đã hoàn thành trò chơi!</h2>
+        <p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>
+        <button onclick="restartGame()">🔄 Chơi lại</button>
+      `;
+    }
+
+    function restartGame() {
+      location.reload();
+    }
+  </script>
+
+</body>
+</html>
