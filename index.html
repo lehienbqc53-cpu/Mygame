@@ -64,13 +64,20 @@
       color: #16a34a;
       margin-top: 10px;
     }
+    #timer {
+      font-size: 18px;
+      font-weight: bold;
+      color: #dc2626;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
 
   <h1>🏭 Trò chơi QC - Phân biệt Bánh Đạt / Bánh Lỗi</h1>
   <div id="game-container">
-    <img id="biscuitImage" src="images/Banh_Dat.PNG" alt="Ảnh bánh">
+    <div id="timer">Thời gian: 30s</div>
+    <img id="biscuitImage" src="images/Banh_Dat.png?v=1" alt="Ảnh bánh">
     <div>
       <button onclick="checkAnswer(true)">✅ Bánh Đạt</button>
       <button onclick="checkAnswer(false)">❌ Bánh Lỗi</button>
@@ -96,23 +103,54 @@
   </div>
 
   <script>
-    // Đường dẫn ảnh đã được sửa để load từ folder images
+    // Mảng ảnh với cache buster
     const images = [
-      { src: "images/Banh_Dat.png", isGood: true },
-      { src: "images/Banh_Loi_Dinh_Nhau.png", isGood: false, correctError: "dinh_nhau" },
-      { src: "images/Banh_Loi_Khong_Dau.png", isGood: false, correctError: "khong_dau_trang" },
-      { src: "images/Banh_Khuyet.png", isGood: false, correctError: "khuyet" },
-      { src: "images/Banh_Loi_Cong_Dau.png", isGood: false, correctError: "cong_dau" }
+      { src: "images/Banh_Dat.png?v=1", isGood: true },
+      { src: "images/Banh_Loi_Dinh_Nhau.png?v=2", isGood: false, correctError: "dinh_nhau" },
+      { src: "images/Banh_Loi_Khong_Dau.png?v=3", isGood: false, correctError: "khong_dau_trang" },
+      { src: "images/Banh_Khuyet.png?v=4", isGood: false, correctError: "khuyet" },
+      { src: "images/Banh_Loi_Cong_Dau.png?v=5", isGood: false, correctError: "cong_dau" }
     ];
+
+    // Shuffle mảng ảnh ngẫu nhiên
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+    shuffleArray(images);
 
     let current = 0;
     let score = 0;
     let answered = false;
+    let timeLeft = 30;
+    let timerInterval;
 
     const imgElement = document.getElementById("biscuitImage");
     const resultElement = document.getElementById("result");
     const errorSection = document.getElementById("errorSection");
     const scoreElement = document.getElementById("score");
+    const timerElement = document.getElementById("timer");
+
+    // Start countdown timer
+    function startTimer() {
+      timerElement.textContent = `Thời gian: ${timeLeft}s`;
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerElement.textContent = `Thời gian: ${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          timeUp();
+        }
+      }, 1000);
+    }
+
+    function timeUp() {
+      resultElement.textContent = "⏰ Hết thời gian!";
+      answered = true;
+      errorSection.style.display = "none";
+    }
 
     function checkAnswer(isGoodSelected) {
       if (answered) return;
@@ -123,6 +161,7 @@
         scoreElement.textContent = "Điểm: " + score;
         answered = true;
         errorSection.style.display = "none";
+        clearInterval(timerInterval);
       } else if (!currentImg.isGood && !isGoodSelected) {
         resultElement.textContent = "❗ Đúng rồi, đây là bánh lỗi. Hãy chọn loại lỗi!";
         errorSection.style.display = "block";
@@ -148,6 +187,7 @@
       }
       answered = true;
       errorSection.style.display = "none";
+      clearInterval(timerInterval);
     }
 
     function nextImage() {
@@ -166,9 +206,13 @@
       errorSection.style.display = "none";
       document.getElementById("errorSelect").value = "";
       answered = false;
+      clearInterval(timerInterval);
+      timeLeft = 30; // thời gian cho mỗi câu hỏi
+      startTimer();
     }
 
     function showFinalScore() {
+      clearInterval(timerInterval);
       document.getElementById("game-container").innerHTML = `
         <h2>🎉 Bạn đã hoàn thành trò chơi!</h2>
         <p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>
@@ -177,10 +221,13 @@
     }
 
     function restartGame() {
+      shuffleArray(images); // đảo lại câu hỏi mới
       location.reload();
     }
+
+    // Bắt đầu game lần đầu
+    loadImage();
   </script>
 
 </body>
 </html>
-
