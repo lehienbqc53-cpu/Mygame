@@ -1,276 +1,195 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎯 Trò chơi QC - Lăng kính người tiêu dùng</title>
-  <style>
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: linear-gradient(120deg, #fff8dc, #ffe4e6);
-      text-align: center;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      color: #6d28d9;
-    }
-    #game-container {
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      display: inline-block;
-      padding: 20px;
-      max-width: 500px;
-      width: 100%;
-    }
-    img {
-      max-width: 100%;
-      border-radius: 15px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      margin: 5px;
-      background-color: #7c3aed;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      background-color: #5b21b6;
-    }
-    select {
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      width: 80%;
-      margin-top: 5px;
-      margin-bottom: 10px;
-    }
-    #result {
-      font-size: 18px;
-      font-weight: bold;
-      margin-top: 15px;
-    }
-    #score {
-      font-size: 18px;
-      font-weight: bold;
-      color: #16a34a;
-      margin-top: 10px;
-    }
-    #timer {
-      font-size: 18px;
-      font-weight: bold;
-      color: #dc2626;
-      margin-bottom: 10px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎯 Lăng kính người tiêu dùng</title>
+<style>
+  body { font-family:"Segoe UI",Arial,sans-serif; background:linear-gradient(120deg,#fff8dc,#ffe4e6); text-align:center; margin:0; padding:20px;}
+  h1 { color:#6d28d9; }
+  #game-container { background:white; border-radius:20px; box-shadow:0 4px 10px rgba(0,0,0,0.15); display:inline-block; padding:20px; max-width:500px; width:100%; }
+  img { max-width:100%; border-radius:15px; margin-bottom:15px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+  button { padding:10px 20px; border:none; border-radius:10px; margin:5px; background-color:#7c3aed; color:white; font-weight:bold; cursor:pointer; transition:0.3s;}
+  button:hover { background-color:#5b21b6;}
+  select { padding:10px; border-radius:8px; border:1px solid #ccc; width:80%; margin-top:5px; margin-bottom:10px;}
+  #result{font-size:18px;font-weight:bold;margin-top:15px;}
+  #score{font-size:18px;font-weight:bold;color:#16a34a;margin-top:10px;}
+  #timer{font-size:18px;font-weight:bold;color:#dc2626;margin-bottom:10px;}
+</style>
 </head>
 <body>
 
-  <h1>🏭 Lăng kính người tiêu dùng</h1>
+<h1>🏭 Lăng kính người tiêu dùng</h1>
 
-  <div id="menu">
-    <h2>Chọn chế độ chơi</h2>
-    <button onclick="startGame('sanpham')">🥯 Lỗi sản phẩm</button>
-    <button onclick="startGame('baobi')">📦 Lỗi bao bì</button>
+<div id="menu">
+  <h2>Chọn chế độ chơi</h2>
+  <button onclick="startGame('sanpham')">🥯 Lỗi sản phẩm</button>
+  <button onclick="startGame('baobi')">📦 Lỗi bao bì</button>
+</div>
+
+<div id="game-container" style="display:none;">
+  <div id="timer">Thời gian: 10s</div>
+  <img id="biscuitImage" src="" alt="Ảnh lỗi QC">
+  <div>
+    <button onclick="checkAnswer(true)">✅ Đạt</button>
+    <button onclick="checkAnswer(false)">❌ Lỗi</button>
   </div>
 
-  <div id="game-container" style="display:none;">
-    <div id="timer">Thời gian: 10s</div>
-    <img id="biscuitImage" src="" alt="Ảnh lỗi QC">
-    <div>
-      <button onclick="checkAnswer(true)">✅ Đạt</button>
-      <button onclick="checkAnswer(false)">❌ Lỗi</button>
-    </div>
-
-    <div id="errorSection" style="display:none;">
-      <p>Chọn loại lỗi:</p>
-      <select id="errorSelect"></select>
-      <br>
-      <button onclick="submitError()">Xác nhận</button>
-    </div>
-
-    <div id="result"></div>
-    <div id="score">Điểm: 0</div>
+  <div id="errorSection" style="display:none;">
+    <p>Chọn loại lỗi:</p>
+    <select id="errorSelect"></select>
     <br>
-    <button onclick="nextImage()">👉 Ảnh tiếp theo</button>
+    <button onclick="submitError()">Xác nhận</button>
   </div>
 
-  <script>
-    const baseURL = "https://lehienbqc53-cpu.github.io/Mygame/images/";
+  <div id="result"></div>
+  <div id="score">Điểm: 0</div>
+  <br>
+  <button onclick="nextImage()">👉 Ảnh tiếp theo</button>
+</div>
 
-    // Danh sách lỗi sản phẩm
-    const productErrors = [
-      { src: "Banh_Be_Vo.png", correctError: "Bánh bể vỡ" },
-      { src: "Banh_Khuyet.png", correctError: "Bánh khuyết" },
-      { src: "Banh_Loi_Cong_Dau.png", correctError: "Bánh cong đầu" },
-      { src: "Banh_Loi_Dinh_Nhau.png", correctError: "Bánh dính nhau" },
-      { src: "Banh_Loi_Khong_Dau.png", correctError: "Bánh không dầu" },
-      { src: "Banh_Mau_Sac_Khong_Dat.png", correctError: "Màu sắc không đạt" },
-      { src: "Banh_Rop_Mat.png", correctError: "Rộp mặt" },
-      { src: "Banh_Sut_Mat_Mieng.png", correctError: "Sứt mất miếng" }
-    ];
+<script>
+const baseURL = "images/";
 
-    // Danh sách lỗi bao bì
-    const packagingErrors = [
-      { src: "Bang_Keo_Nhan_Khong_Du_chieu_dai.png", correctError: "Băng keo nhăn không đủ chiều dài" },
-      { src: "Bang_Keo_Noi_Cuon.png", correctError: "Băng keo nối cuộn" },
-      { src: "Can_Trang.png", correctError: "Cấn trắng" },
-      { src: "Dan_Lech.png", correctError: "Dán lệch" },
-      { src: "Duong_Han_Bi_Hu_Hai.png", correctError: "Đường hàn bị hư hại" },
-      { src: "Hop_Bi_Ho.png", correctError: "Hộp bị hở" },
-      { src: "Lech_Bao_Bi.png", correctError: "Lệch bao bì" },
-      { src: "Sai_Date_Code.png", correctError: "Sai date code" },
-      { src: "Xep_Ly.png", correctError: "Xếp ly" }
-    ];
+// Danh sách lỗi sản phẩm
+const productErrors = [
+  { src:"Banh_Be_Vo.webp", correctError:"Bánh bể vỡ" },
+  { src:"Banh_Khuyet.webp", correctError:"Bánh khuyết" },
+  { src:"Banh_Loi_Cong_Dau.webp", correctError:"Bánh cong đầu" },
+  { src:"Banh_Loi_Dinh_Nhau.webp", correctError:"Bánh dính nhau" },
+  { src:"Banh_Loi_Khong_Dau.webp", correctError:"Bánh không dầu" },
+  { src:"Banh_Mau_Sac_Khong_Dat.webp", correctError:"Màu sắc không đạt" },
+  { src:"Banh_Rop_Mat.webp", correctError:"Rộp mặt" },
+  { src:"Banh_Sut_Mat_Mieng.webp", correctError:"Sứt mất miếng" }
+];
 
-    // Danh sách lỗi hiển thị trong dropdown
-    const errorOptions = {
-      sanpham: [
-        "Bánh bể vỡ", "Bánh khuyết", "Bánh cong đầu", "Bánh dính nhau",
-        "Bánh không dầu", "Màu sắc không đạt", "Rộp mặt", "Sứt mất miếng"
-      ],
-      baobi: [
-        "Băng keo nhăn không đủ chiều dài", "Băng keo nối cuộn", "Cấn trắng", "Dán lệch",
-        "Đường hàn bị hư hại", "Hộp bị hở", "Lệch bao bì", "Sai date code", "Xếp ly"
-      ]
-    };
+// Danh sách lỗi bao bì
+const packagingErrors = [
+  { src:"Bang_Keo_Nhan_Khong_Du_chieu_dai.webp", correctError:"Băng keo nhăn không đủ chiều dài" },
+  { src:"Bang_Keo_Noi_Cuon.webp", correctError:"Băng keo nối cuộn" },
+  { src:"Can_Trang.webp", correctError:"Cấn trắng" },
+  { src:"Dan_Lech.webp", correctError:"Dán lệch" },
+  { src:"Duong_Han_Bi_Hu_Hai.webp", correctError:"Đường hàn bị hư hại" },
+  { src:"Hop_Bi_Ho.webp", correctError:"Hộp bị hở" },
+  { src:"Lech_Bao_Bi.webp", correctError:"Lệch bao bì" },
+  { src:"Sai_Date_Code.webp", correctError:"Sai date code" },
+  { src:"Xep_Ly.webp", correctError:"Xếp ly" }
+];
 
-    let images = [];
-    let mode = ""; // sanpham hoặc baobi
-    let current = 0;
-    let score = 0;
-    let answered = false;
-    let timeLeft = 10;
-    let timerInterval;
+const errorOptions = {
+  sanpham: productErrors.map(e=>e.correctError),
+  baobi: packagingErrors.map(e=>e.correctError)
+};
 
-    const imgElement = document.getElementById("biscuitImage");
-    const resultElement = document.getElementById("result");
-    const errorSection = document.getElementById("errorSection");
-    const scoreElement = document.getElementById("score");
-    const timerElement = document.getElementById("timer");
-    const menu = document.getElementById("menu");
-    const gameContainer = document.getElementById("game-container");
-    const errorSelect = document.getElementById("errorSelect");
+let images = [], mode="", current=0, score=0, answered=false, timeLeft=10, timerInterval;
 
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-    }
+const imgElement=document.getElementById("biscuitImage");
+const resultElement=document.getElementById("result");
+const errorSection=document.getElementById("errorSection");
+const scoreElement=document.getElementById("score");
+const timerElement=document.getElementById("timer");
+const menu=document.getElementById("menu");
+const gameContainer=document.getElementById("game-container");
+const errorSelect=document.getElementById("errorSelect");
 
-    function startGame(selectedMode) {
-      mode = selectedMode;
-      images = (mode === "sanpham" ? productErrors : packagingErrors)
-        .map(img => ({ ...img, src: baseURL + img.src, isGood: false }));
-      images.push({ src: baseURL + "Banh_Dat_1.png", isGood: true });
-      images.push({ src: baseURL + "Banh_Dat_2.png", isGood: true });
-      shuffleArray(images);
-      menu.style.display = "none";
-      gameContainer.style.display = "block";
-      loadErrorOptions();
-      loadImage();
-    }
+function shuffleArray(array){for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[array[i],array[j]]=[array[j],array[i]];}}
 
-    function loadErrorOptions() {
-      errorSelect.innerHTML = "<option value=''>-- Chọn loại lỗi --</option>";
-      errorOptions[mode].forEach(opt => {
-        const option = document.createElement("option");
-        option.value = opt;
-        option.textContent = opt;
-        errorSelect.appendChild(option);
-      });
-    }
+function startGame(selectedMode){
+  mode=selectedMode;
+  images=(mode==="sanpham"?productErrors:packagingErrors)
+    .map(img=>({...img, src: baseURL+img.src, isGood:false}));
+  images.push({src:baseURL+"Banh_Dat_1.webp", isGood:true});
+  images.push({src:baseURL+"Banh_Dat_2.webp", isGood:true});
+  shuffleArray(images);
 
-    function startTimer() {
-      timerElement.textContent = `Thời gian: ${timeLeft}s`;
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        timerElement.textContent = `Thời gian: ${timeLeft}s`;
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          resultElement.textContent = "⏰ Hết thời gian!";
-          answered = true;
-          errorSection.style.display = "none";
-        }
-      }, 1000);
-    }
+  // Preload ảnh
+  images.forEach(img=>{const i=new Image();i.src=img.src;});
 
-    function checkAnswer(isGoodSelected) {
-      if (answered) return;
-      const currentImg = images[current];
-      if (currentImg.isGood && isGoodSelected) {
-        resultElement.textContent = "🎉 Chính xác! Đây là sản phẩm đạt!";
-        score++;
-        scoreElement.textContent = "Điểm: " + score;
-        answered = true;
-        clearInterval(timerInterval);
-      } else if (!currentImg.isGood && !isGoodSelected) {
-        resultElement.textContent = "❗ Đây là lỗi, hãy chọn loại lỗi!";
-        errorSection.style.display = "block";
-      } else {
-        resultElement.textContent = "❌ Sai rồi!";
-        errorSection.style.display = "none";
-      }
-    }
+  menu.style.display="none";
+  gameContainer.style.display="block";
+  loadErrorOptions();
+  loadImage();
+}
 
-    function submitError() {
-      const selected = errorSelect.value;
-      const currentImg = images[current];
-      if (!selected) {
-        resultElement.textContent = "⚠️ Hãy chọn loại lỗi!";
-        return;
-      }
-      if (selected === currentImg.correctError) {
-        resultElement.textContent = "✅ Chính xác! Bạn đã xác định đúng loại lỗi.";
-        score++;
-      } else {
-        resultElement.textContent = "❌ Sai loại lỗi.";
-      }
-      scoreElement.textContent = "Điểm: " + score;
-      answered = true;
-      errorSection.style.display = "none";
+function loadErrorOptions(){
+  errorSelect.innerHTML="<option value=''>-- Chọn loại lỗi --</option>";
+  errorOptions[mode].forEach(opt=>{
+    const option=document.createElement("option");
+    option.value=opt; option.textContent=opt;
+    errorSelect.appendChild(option);
+  });
+}
+
+function startTimer(){
+  timerElement.textContent=`Thời gian: ${timeLeft}s`;
+  timerInterval=setInterval(()=>{
+    timeLeft--;
+    timerElement.textContent=`Thời gian: ${timeLeft}s`;
+    if(timeLeft<=0){
       clearInterval(timerInterval);
+      resultElement.textContent="⏰ Hết thời gian!";
+      answered=true;
+      errorSection.style.display="none";
     }
+  },1000);
+}
 
-    function nextImage() {
-      if (current < images.length - 1) {
-        current++;
-        loadImage();
-      } else {
-        showFinalScore();
-      }
-    }
+function checkAnswer(isGoodSelected){
+  if(answered) return;
+  const currentImg=images[current];
+  if(currentImg.isGood && isGoodSelected){
+    resultElement.textContent="🎉 Chính xác! Đây là sản phẩm đạt!";
+    score++; scoreElement.textContent="Điểm: "+score;
+    answered=true; clearInterval(timerInterval);
+  } else if(!currentImg.isGood && !isGoodSelected){
+    resultElement.textContent="❗ Đây là lỗi, hãy chọn loại lỗi!";
+    errorSection.style.display="block";
+  } else {
+    resultElement.textContent="❌ Sai rồi!";
+    errorSection.style.display="none";
+  }
+}
 
-    function loadImage() {
-      const currentImg = images[current];
-      imgElement.src = currentImg.src;
-      resultElement.textContent = "";
-      errorSection.style.display = "none";
-      errorSelect.value = "";
-      answered = false;
-      clearInterval(timerInterval);
-      timeLeft = 10;
-      startTimer();
-    }
+function submitError(){
+  const selected=errorSelect.value;
+  const currentImg=images[current];
+  if(!selected){ resultElement.textContent="⚠️ Hãy chọn loại lỗi!"; return;}
+  if(selected===currentImg.correctError){
+    resultElement.textContent="✅ Chính xác! Bạn đã xác định đúng loại lỗi.";
+    score++;
+  } else { resultElement.textContent="❌ Sai loại lỗi.";}
+  scoreElement.textContent="Điểm: "+score;
+  answered=true;
+  errorSection.style.display="none";
+  clearInterval(timerInterval);
+}
 
-    function showFinalScore() {
-      clearInterval(timerInterval);
-      gameContainer.innerHTML = `
-        <h2>🎉 Hoàn thành!</h2>
-        <p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>
-        <button onclick="location.reload()">🔄 Chơi lại</button>
-      `;
-    }
-  </script>
+function nextImage(){
+  if(current<images.length-1){ current++; loadImage();}
+  else { showFinalScore();}
+}
+
+function loadImage(){
+  const currentImg=images[current];
+  imgElement.src=currentImg.src;
+  resultElement.textContent="";
+  errorSection.style.display="none";
+  errorSelect.value="";
+  answered=false;
+  clearInterval(timerInterval);
+  timeLeft=10;
+  startTimer();
+}
+
+function showFinalScore(){
+  clearInterval(timerInterval);
+  gameContainer.innerHTML=`
+    <h2>🎉 Hoàn thành!</h2>
+    <p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>
+    <button onclick="location.reload()">🔄 Chơi lại</button>
+  `;
+}
+</script>
 
 </body>
 </html>
-
