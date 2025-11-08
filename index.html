@@ -55,9 +55,11 @@
 </div>
 
 <script>
-const baseURL = "https://raw.githubusercontent.com/lehienbqc53-cpu/Mygame/gh-pages/Anh/";
-const scriptURL = "https://script.google.com/macros/s/AKfycbzhvn2yHUyPGxcwgBsodXUl8D-XDfIFoE_yjq2EPTVUsk9-eeyIZyZ86umLn084sONV/exec"; // Apps Script URL
+// --- Cấu hình ---
+const baseURL = "https://raw.githubusercontent.com/lehienbqc53-cpu/Mygame/gh-pages/Anh/"; 
+const scriptURL = "https://script.google.com/macros/s/AKfycbzhvn2yHUyPGxcwgBsodXUl8D-XDfIFoE_yjq2EPTVUsk9-eeyIZyZ86umLn084sONV/exec";
 
+// --- Dữ liệu ảnh ---
 const productErrors = [
   { src:"Banh_Be_Vo.webp", correctError:"Bánh bể vỡ" },
   { src:"Banh_Khuyet.webp", correctError:"Bánh khuyết" },
@@ -126,8 +128,11 @@ function startGame(selectedMode){
   mode=selectedMode;
   const baseErrors= mode==="sanpham"?productErrors: mode==="baobi1"?pack1Errors:pack2Errors;
   images=baseErrors.map(img=>({...img, src: baseURL+img.src+"?v="+Date.now(), isGood:false}));
-  images.push({src:baseURL+"Banh_Dat_1.webp?v="+Date.now(), isGood:true});
-  images.push({src:baseURL+"Banh_Dat_2.webp?v="+Date.now(), isGood:true});
+  // Thêm sản phẩm đạt
+  if(mode==="sanpham"){
+    images.push({src:baseURL+"Banh_Dat_1.webp?v="+Date.now(), isGood:true});
+    images.push({src:baseURL+"Banh_Dat_2.webp?v="+Date.now(), isGood:true});
+  }
   shuffleArray(images);
   images.forEach(img=>{const i=new Image();i.src=img.src;});
   menu.style.display="none";
