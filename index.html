@@ -8,16 +8,16 @@
   body { font-family:"Segoe UI",Arial,sans-serif; background:linear-gradient(120deg,#fff8dc,#ffe4e6); text-align:center; margin:0; padding:20px;}
   h1 { color:#6d28d9; }
   #game-container { background:white; border-radius:20px; box-shadow:0 4px 10px rgba(0,0,0,0.15); display:inline-block; padding:20px; max-width:500px; width:100%; }
-  img { max-width:100%; border-radius:15px; margin-bottom:15px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-  button { padding:10px 20px; border:none; border-radius:10px; margin:5px; background-color:#7c3aed; color:white; font-weight:bold; cursor:pointer; transition:0.3s; }
-  button:hover { background-color:#5b21b6; }
-  select, input { padding:10px; border-radius:8px; border:1px solid #ccc; width:80%; margin-top:5px; margin-bottom:10px; }
+  img { max-width:100%; border-radius:15px; margin-bottom:15px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+  button { padding:10px 20px; border:none; border-radius:10px; margin:5px; background-color:#7c3aed; color:white; font-weight:bold; cursor:pointer; transition:0.3s;}
+  button:hover { background-color:#5b21b6;}
+  select, input { padding:10px; border-radius:8px; border:1px solid #ccc; width:80%; margin-top:5px; margin-bottom:10px;}
   #result{font-size:18px;font-weight:bold;margin-top:15px;}
   #score{font-size:18px;font-weight:bold;color:#16a34a;margin-top:10px;}
   #timer{font-size:18px;font-weight:bold;color:#dc2626;margin-bottom:10px;}
   table { width:100%; border-collapse:collapse; margin-top:15px;}
-  th, td { border:1px solid #ccc; padding:8px; font-size:14px; }
-  th { background:#7c3aed; color:white; }
+  th, td { border:1px solid #ccc; padding:8px; font-size:14px;}
+  th { background:#7c3aed; color:white;}
 </style>
 </head>
 <body>
@@ -55,8 +55,8 @@
 </div>
 
 <script>
-const baseURL = "Anh/";
-const scriptURL = "https://script.google.com/macros/s/AKfycbyDDsO7pO_KaoYIay_LuD9A4uRL8Qub2G0D6TKUNVZLXQd2C3BcqpU90e4xW3jn105z/exec";
+const baseURL = "Anh/"; // Thư mục ảnh trên GitHub
+const scriptURL = "https://script.google.com/macros/s/AKfycbyDDsO7pO_KaoYIay_LuD9A4uRL8Qub2G0D6TKUNVZLXQd2C3BcqpU90e4xW3jn105z/exec"; // Apps Script URL
 
 // --- Dữ liệu hình ảnh ---
 const productErrors = [
@@ -127,6 +127,7 @@ function startGame(selectedMode){
   mode=selectedMode;
   const baseErrors= mode==="sanpham"?productErrors: mode==="baobi1"?pack1Errors:pack2Errors;
   images=baseErrors.map(img=>({...img, src: baseURL+img.src+"?v="+Date.now(), isGood:false}));
+  // Thêm sản phẩm đạt
   images.push({src:baseURL+"Banh_Dat_1.webp?v="+Date.now(), isGood:true});
   images.push({src:baseURL+"Banh_Dat_2.webp?v="+Date.now(), isGood:true});
   shuffleArray(images);
@@ -209,7 +210,9 @@ function loadImage(){
 
 async function showFinalScore(){
   clearInterval(timerInterval);
-  gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p><p>Đang lưu kết quả...</p>`;
+  gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2>
+    <p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>
+    <p>Đang lưu kết quả...</p>`;
   
   try {
     await fetch(scriptURL, {
@@ -222,12 +225,10 @@ async function showFinalScore(){
         diem: score
       })
     });
-  } catch (e) {
-    console.error("Lỗi khi gửi dữ liệu:", e);
-  }
 
-  // Lấy xếp hạng
-  try {
+    // Chờ 0.5 giây để dữ liệu ghi kịp
+    await new Promise(r => setTimeout(r, 500));
+
     const res = await fetch(scriptURL+"?action=getRanking");
     const ranking = await res.json();
 
@@ -240,7 +241,10 @@ async function showFinalScore(){
     });
     tableHTML += "</table><br><button onclick='location.reload()'>🔄 Chơi lại</button>";
 
-    gameContainer.innerHTML = `<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>${tableHTML}`;
+    gameContainer.innerHTML = `<h2>🎉 Hoàn thành!</h2>
+      <p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>
+      ${tableHTML}`;
+
   } catch(err){
     gameContainer.innerHTML += "<p>⚠️ Lỗi khi tải xếp hạng</p>";
     console.error(err);
