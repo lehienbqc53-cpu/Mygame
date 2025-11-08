@@ -23,12 +23,13 @@
 
 <div id="menu">
   <h2>Chọn chế độ chơi</h2>
-  <button onclick="startGame('sanpham')">🥯 Lỗi sản phẩm</button>
-  <button onclick="startGame('baobi')">📦 Lỗi bao bì</button>
+  <button onclick="startGame('sanpham')">🥯 Sản phẩm</button>
+  <button onclick="startGame('baobi1')">📦 Bao bì cấp 1</button>
+  <button onclick="startGame('baobi2')">📦 Bao bì cấp 2</button>
 </div>
 
 <div id="game-container" style="display:none;">
-  <div id="timer">Thời gian: 10s</div>
+  <div id="timer">Thời gian: 20s</div>
   <img id="biscuitImage" src="" alt="Ảnh lỗi QC">
   <div>
     <button onclick="checkAnswer(true)">✅ Đạt</button>
@@ -51,7 +52,7 @@
 <script>
 const baseURL = "Anh/"; // Folder chứa ảnh trên GitHub
 
-// === Lỗi sản phẩm ===
+// === Lỗi sản phẩm + ảnh đạt ===
 const productErrors = [
   { src:"Banh_Be_Vo.webp", correctError:"Bánh bể vỡ" },
   { src:"Banh_Khuyet.webp", correctError:"Bánh khuyết" },
@@ -60,26 +61,33 @@ const productErrors = [
   { src:"Banh_Loi_Khong_Dau.webp", correctError:"Bánh không dầu" },
   { src:"Banh_Mau_Sac_Khong_Dat.webp", correctError:"Màu sắc không đạt" },
   { src:"Banh_Rop_Mat.webp", correctError:"Rộp mặt" },
-  { src:"Banh_Sut_Mat_Mieng.webp", correctError:"Sứt mất miếng" }
+  { src:"Banh_Sut_Mat_Mieng.webp", correctError:"Sứt mất miếng" },
+  { src:"Banh_Dat_1.webp", isGood:true },
+  { src:"Banh_Dat_2.webp", isGood:true }
 ];
 
-// === Lỗi bao bì đầy đủ ===
-const packagingErrors = [
-  { src:"Bang_Keo_Nhan_Khong_Du_Chieu_Dai.webp", correctError:"Băng keo nhăn không đủ chiều dài" },
+// === Bao bì cấp 1 ===
+const packagingLevel1 = [
+  { src:"Sai_Date_Code.webp", correctError:"Sai date code" },
   { src:"Bang_Keo_Noi_Cuon.webp", correctError:"Băng keo nối cuộn" },
   { src:"Can_Trang.webp", correctError:"Cấn trắng" },
-  { src:"Dan_Lech.webp", correctError:"Dán lệch" },
   { src:"Duong_Han_Bi_Hu_Hai.webp", correctError:"Đường hàn bị hư hại" },
   { src:"Duong_Han_Can_Rach.webp", correctError:"Đường hàn cấn rách" },
   { src:"Duong_Han_Qua_Nhiet.webp", correctError:"Đường hàn quá nhiệt" },
   { src:"Duong_Han_Yeu.webp", correctError:"Đường hàn yếu" },
-  { src:"Hop_Bi_Ho.webp", correctError:"Hộp bị hở" },
+  { src:"Xep_Ly.webp", correctError:"Xếp ly" },
+  { src:"Xep_Ly_xi.webp", correctError:"Xếp ly xỉ" },
+  { src:"Kep_Banh_Duong_Han.webp", correctError:"Kẹp bánh đường hàn" },
+  { src:"Lech_Bao_Bi.webp", correctError:"Lệch bao bì" }
+];
+
+// === Bao bì cấp 2 ===
+const packagingLevel2 = [
+  { src:"Bang_Keo_Nhan_Khong_Du_Chieu_Dai.webp", correctError:"Băng keo nhăn không đủ chiều dài" },
   { src:"Hop_Bung_Keo.webp", correctError:"Hộp bung keo" },
   { src:"Hop_Dan_Tho_Tai.webp", correctError:"Hộp dán thô tại" },
   { src:"Hop_Lem_Keo.webp", correctError:"Hộp lem keo" },
-  { src:"Kep_Banh_Duong_Han.webp", correctError:"Kẹp bánh đường hàn" },
   { src:"Khe_Ho_Nap_Thung.webp", correctError:"Khe hở nắp thùng" },
-  { src:"Lech_Bao_Bi.webp", correctError:"Lệch bao bì" },
   { src:"Lech_Nap_Thung.webp", correctError:"Lệch nắp thùng" },
   { src:"Mop_Gay_Hop.webp", correctError:"Móp gãy hộp" },
   { src:"Rach_Goc_Hop.webp", correctError:"Rách góc hộp" },
@@ -90,22 +98,17 @@ const packagingErrors = [
   { src:"Thieu_Thung_Tren_Palet.webp", correctError:"Thiếu thùng trên pallet" },
   { src:"Thung_Mop_Meo.webp", correctError:"Thùng móp méo" },
   { src:"Tray_Xuoc_Hop.webp", correctError:"Tray xước hộp" },
-  { src:"Xep_Ly.webp", correctError:"Xếp ly" },
-  { src:"Xep_Ly_xi.webp", correctError:"Xếp ly xỉ" }
-];
-
-// === Ảnh sản phẩm đạt ===
-const goodProducts = [
-  { src:"Banh_Dat_1.webp", isGood:true },
-  { src:"Banh_Dat_2.webp", isGood:true }
+  { src:"Hop_Bi_Ho.webp", correctError:"Hộp bị hở" },
+  { src:"Dan_Lech.webp", correctError:"Dán lệch" }
 ];
 
 const errorOptions = {
   sanpham: productErrors.map(e=>e.correctError),
-  baobi: packagingErrors.map(e=>e.correctError)
+  baobi1: packagingLevel1.map(e=>e.correctError),
+  baobi2: packagingLevel2.map(e=>e.correctError)
 };
 
-let images = [], mode="", current=0, score=0, answered=false, timeLeft=10, timerInterval;
+let images = [], mode="", current=0, score=0, answered=false, timeLeft=20, timerInterval;
 
 const imgElement=document.getElementById("biscuitImage");
 const resultElement=document.getElementById("result");
@@ -119,19 +122,14 @@ const errorSelect=document.getElementById("errorSelect");
 function shuffleArray(array){for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[array[i],array[j]]=[array[j],array[i]];}}
 
 function startGame(selectedMode){
-  mode=selectedMode;
-  images=(mode==="sanpham"?productErrors:packagingErrors)
-    .map(img=>({...img, src: baseURL+img.src, isGood:false}));
+  mode = selectedMode;
 
-  // Thêm sản phẩm đạt chỉ khi chế độ sản phẩm
-  if(mode==="sanpham"){
-    goodProducts.forEach(img=>images.push({...img, src: baseURL+img.src}));
-  }
+  if(mode === "sanpham") images = productErrors.map(img=>({...img, src: baseURL+img.src, isGood:!!img.isGood}));
+  else if(mode === "baobi1") images = packagingLevel1.map(img=>({...img, src: baseURL+img.src, isGood:false}));
+  else if(mode === "baobi2") images = packagingLevel2.map(img=>({...img, src: baseURL+img.src, isGood:false}));
 
   shuffleArray(images);
-
-  // Preload ảnh
-  images.forEach(img=>{const i=new Image();i.src=img.src;});
+  images.forEach(img=>{const i=new Image(); i.src=img.src;}); // preload
 
   menu.style.display="none";
   gameContainer.style.display="block";
@@ -205,7 +203,7 @@ function loadImage(){
   errorSelect.value="";
   answered=false;
   clearInterval(timerInterval);
-  timeLeft=10;
+  timeLeft=20;
   startTimer();
 }
 
