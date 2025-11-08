@@ -55,6 +55,7 @@
 </div>
 
 <script>
+// --- Cấu hình ---
 const baseURL = "https://lehienbqc53-cpu.github.io/Mygame/Anh/";
 const scriptURL = "https://script.google.com/macros/s/AKfycbzjQzke2zEqgoVla5DEcusCCwXi6xW5vipPltzdWnIcKUrsCaFZ3x20IgNQOwm-6nmg7A/exec";
 
@@ -103,8 +104,13 @@ const pack2Errors = [
   { src:"Dan_Lech.webp", correctError:"Dán lệch" }
 ];
 
-const errorOptions = { sanpham: productErrors.map(e=>e.correctError), baobi1: pack1Errors.map(e=>e.correctError), baobi2: pack2Errors.map(e=>e.correctError) };
+const errorOptions = {
+  sanpham: productErrors.map(e=>e.correctError),
+  baobi1: pack1Errors.map(e=>e.correctError),
+  baobi2: pack2Errors.map(e=>e.correctError)
+};
 
+// --- Biến toàn cục ---
 let images=[], mode="", current=0, score=0, answered=false, timeLeft=20, timerInterval, playerName="";
 const imgElement=document.getElementById("biscuitImage");
 const resultElement=document.getElementById("result");
@@ -115,6 +121,7 @@ const menu=document.getElementById("menu");
 const gameContainer=document.getElementById("game-container");
 const errorSelect=document.getElementById("errorSelect");
 
+// --- Hàm ---
 function shuffleArray(array){for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[array[i],array[j]]=[array[j],array[i]];}}
 
 function startGame(selectedMode){
@@ -225,25 +232,21 @@ async function showFinalScore(){
     console.error("Lỗi khi gửi dữ liệu:", e);
   }
 
-  // Hiển thị bảng xếp hạng
-  try {
-    const res = await fetch(scriptURL+"?action=getRanking");
-    const ranking = await res.json();
+  // Lấy bảng xếp hạng
+  const res = await fetch(scriptURL+"?action=getRanking");
+  const ranking = await res.json();
 
-    let tableHTML = `
-      <h3>🏆 Bảng xếp hạng TOP 10</h3>
-      <table><tr><th>Hạng</th><th>Tên</th><th>Mục chơi</th><th>Điểm</th></tr>
-    `;
-    ranking.slice(0,10).forEach((r,i)=>{
-      tableHTML += `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.mode}</td><td>${r.score}</td></tr>`;
-    });
-    tableHTML += "</table><br><button onclick='location.reload()'>🔄 Chơi lại</button>";
-    gameContainer.innerHTML = `<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>${tableHTML}`;
-  } catch(e){
-    console.error("Không thể tải bảng xếp hạng", e);
-  }
+  let tableHTML = `
+    <h3>🏆 Bảng xếp hạng TOP 10</h3>
+    <table><tr><th>Hạng</th><th>Tên</th><th>Mục chơi</th><th>Điểm</th></tr>
+  `;
+  ranking.slice(0,10).forEach((r,i)=>{
+    tableHTML += `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.mode}</td><td>${r.score}</td></tr>`;
+  });
+  tableHTML += "</table><br><button onclick='location.reload()'>🔄 Chơi lại</button>";
+
+  gameContainer.innerHTML = `<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>${tableHTML}`;
 }
 </script>
 </body>
 </html>
-
