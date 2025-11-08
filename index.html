@@ -49,9 +49,9 @@
 </div>
 
 <script>
-const baseURL = "Anh/"; // Thư mục chứa ảnh trên GitHub
+const baseURL = "Anh/"; // Folder chứa ảnh trên GitHub
 
-// Danh sách lỗi sản phẩm
+// === Lỗi sản phẩm ===
 const productErrors = [
   { src:"Banh_Be_Vo.webp", correctError:"Bánh bể vỡ" },
   { src:"Banh_Khuyet.webp", correctError:"Bánh khuyết" },
@@ -63,17 +63,41 @@ const productErrors = [
   { src:"Banh_Sut_Mat_Mieng.webp", correctError:"Sứt mất miếng" }
 ];
 
-// Danh sách lỗi bao bì
+// === Lỗi bao bì đầy đủ ===
 const packagingErrors = [
-  { src:"Bang_Keo_Nhan_Khong_Du_chieu_dai.webp", correctError:"Băng keo nhăn không đủ chiều dài" },
+  { src:"Bang_Keo_Nhan_Khong_Du_Chieu_Dai.webp", correctError:"Băng keo nhăn không đủ chiều dài" },
   { src:"Bang_Keo_Noi_Cuon.webp", correctError:"Băng keo nối cuộn" },
   { src:"Can_Trang.webp", correctError:"Cấn trắng" },
   { src:"Dan_Lech.webp", correctError:"Dán lệch" },
   { src:"Duong_Han_Bi_Hu_Hai.webp", correctError:"Đường hàn bị hư hại" },
+  { src:"Duong_Han_Can_Rach.webp", correctError:"Đường hàn cấn rách" },
+  { src:"Duong_Han_Qua_Nhiet.webp", correctError:"Đường hàn quá nhiệt" },
+  { src:"Duong_Han_Yeu.webp", correctError:"Đường hàn yếu" },
   { src:"Hop_Bi_Ho.webp", correctError:"Hộp bị hở" },
+  { src:"Hop_Bung_Keo.webp", correctError:"Hộp bung keo" },
+  { src:"Hop_Dan_Tho_Tai.webp", correctError:"Hộp dán thô tại" },
+  { src:"Hop_Lem_Keo.webp", correctError:"Hộp lem keo" },
+  { src:"Kep_Banh_Duong_Han.webp", correctError:"Kẹp bánh đường hàn" },
+  { src:"Khe_Ho_Nap_Thung.webp", correctError:"Khe hở nắp thùng" },
   { src:"Lech_Bao_Bi.webp", correctError:"Lệch bao bì" },
+  { src:"Lech_Nap_Thung.webp", correctError:"Lệch nắp thùng" },
+  { src:"Mop_Gay_Hop.webp", correctError:"Móp gãy hộp" },
+  { src:"Rach_Goc_Hop.webp", correctError:"Rách góc hộp" },
   { src:"Sai_Date_Code.webp", correctError:"Sai date code" },
-  { src:"Xep_Ly.webp", correctError:"Xếp ly" }
+  { src:"Sai_Date_Thung.webp", correctError:"Sai date thùng" },
+  { src:"Sai_Quy_Cach_Xep.webp", correctError:"Sai quy cách xếp" },
+  { src:"Thieu_Banh.webp", correctError:"Thiếu bánh" },
+  { src:"Thieu_Thung_Tren_Palet.webp", correctError:"Thiếu thùng trên pallet" },
+  { src:"Thung_Mop_Meo.webp", correctError:"Thùng móp méo" },
+  { src:"Tray_Xuoc_Hop.webp", correctError:"Tray xước hộp" },
+  { src:"Xep_Ly.webp", correctError:"Xếp ly" },
+  { src:"Xep_Ly_xi.webp", correctError:"Xếp ly xỉ" }
+];
+
+// === Ảnh sản phẩm đạt ===
+const goodProducts = [
+  { src:"Banh_Dat_1.webp", isGood:true },
+  { src:"Banh_Dat_2.webp", isGood:true }
 ];
 
 const errorOptions = {
@@ -99,10 +123,9 @@ function startGame(selectedMode){
   images=(mode==="sanpham"?productErrors:packagingErrors)
     .map(img=>({...img, src: baseURL+img.src, isGood:false}));
 
-  // Thêm sản phẩm đạt chỉ cho chế độ sản phẩm
+  // Thêm sản phẩm đạt chỉ khi chế độ sản phẩm
   if(mode==="sanpham"){
-    images.push({src:baseURL+"Banh_Dat_1.webp", isGood:true});
-    images.push({src:baseURL+"Banh_Dat_2.webp", isGood:true});
+    goodProducts.forEach(img=>images.push({...img, src: baseURL+img.src}));
   }
 
   shuffleArray(images);
