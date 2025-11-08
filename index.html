@@ -55,10 +55,9 @@
 </div>
 
 <script>
-const baseURL = "Anh/"; // Thư mục chứa ảnh trên GitHub
+const baseURL = "https://raw.githubusercontent.com/lehienbqc53-cpu/Mygame/gh-pages/Anh/";
 const scriptURL = "https://script.google.com/macros/s/AKfycbzhvn2yHUyPGxcwgBsodXUl8D-XDfIFoE_yjq2EPTVUsk9-eeyIZyZ86umLn084sONV/exec"; // Apps Script URL
 
-// --- Dữ liệu hình ảnh ---
 const productErrors = [
   { src:"Banh_Be_Vo.webp", correctError:"Bánh bể vỡ" },
   { src:"Banh_Khuyet.webp", correctError:"Bánh khuyết" },
@@ -130,7 +129,7 @@ function startGame(selectedMode){
   images.push({src:baseURL+"Banh_Dat_1.webp?v="+Date.now(), isGood:true});
   images.push({src:baseURL+"Banh_Dat_2.webp?v="+Date.now(), isGood:true});
   shuffleArray(images);
-  images.forEach(img=>{const i=new Image();i.src=img.src;}); // preload
+  images.forEach(img=>{const i=new Image();i.src=img.src;});
   menu.style.display="none";
   gameContainer.style.display="block";
   loadErrorOptions();
@@ -225,7 +224,6 @@ async function showFinalScore(){
       })
     });
 
-    // Chờ dữ liệu ghi kịp
     await new Promise(r => setTimeout(r, 500));
 
     const res = await fetch(scriptURL+"?action=getRanking");
