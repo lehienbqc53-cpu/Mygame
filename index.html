@@ -5,19 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🎯 Lăng kính người tiêu dùng</title>
 <style>
-body { font-family:"Segoe UI",Arial,sans-serif; background:linear-gradient(120deg,#fff8dc,#ffe4e6); text-align:center; margin:0; padding:20px;}
-h1 { color:#6d28d9; }
-#game-container { background:white; border-radius:20px; box-shadow:0 4px 10px rgba(0,0,0,0.15); display:inline-block; padding:20px; max-width:500px; width:100%; }
-img { max-width:100%; border-radius:15px; margin-bottom:15px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
-button { padding:10px 20px; border:none; border-radius:10px; margin:5px; background-color:#7c3aed; color:white; font-weight:bold; cursor:pointer; transition:0.3s;}
-button:hover { background-color:#5b21b6;}
-select, input { padding:10px; border-radius:8px; border:1px solid #ccc; width:80%; margin-top:5px; margin-bottom:10px;}
-#result{font-size:18px;font-weight:bold;margin-top:15px;}
-#score{font-size:18px;font-weight:bold;color:#16a34a;margin-top:10px;}
-#timer{font-size:18px;font-weight:bold;color:#dc2626;margin-bottom:10px;}
-table { width:100%; border-collapse:collapse; margin-top:15px;}
-th, td { border:1px solid #ccc; padding:8px; font-size:14px;}
-th { background:#7c3aed; color:white;}
+  body { font-family:"Segoe UI",Arial,sans-serif; background:linear-gradient(120deg,#fff8dc,#ffe4e6); text-align:center; margin:0; padding:20px;}
+  h1 { color:#6d28d9; }
+  #game-container { background:white; border-radius:20px; box-shadow:0 4px 10px rgba(0,0,0,0.15); display:inline-block; padding:20px; max-width:500px; width:100%; }
+  img { max-width:100%; border-radius:15px; margin-bottom:15px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+  button { padding:10px 20px; border:none; border-radius:10px; margin:5px; background-color:#7c3aed; color:white; font-weight:bold; cursor:pointer; transition:0.3s;}
+  button:hover { background-color:#5b21b6;}
+  select, input { padding:10px; border-radius:8px; border:1px solid #ccc; width:80%; margin-top:5px; margin-bottom:10px;}
+  #result{font-size:18px;font-weight:bold;margin-top:15px;}
+  #score{font-size:18px;font-weight:bold;color:#16a34a;margin-top:10px;}
+  #timer{font-size:18px;font-weight:bold;color:#dc2626;margin-bottom:10px;}
+  table { width:100%; border-collapse:collapse; margin-top:15px;}
+  th, td { border:1px solid #ccc; padding:8px; font-size:14px;}
+  th { background:#7c3aed; color:white;}
 </style>
 </head>
 <body>
@@ -55,10 +55,10 @@ th { background:#7c3aed; color:white;}
 </div>
 
 <script>
-const baseURL = "https://raw.githubusercontent.com/lehienbqc53-cpu/Mygame/gh-pages/Anh/";
-const scriptURL = "https://script.google.com/macros/s/AKfycbzhvn2yHUyPGxcwgBsodXUl8D-XDfIFoE_yjq2EPTVUsk9-eeyIZyZ86umLn084sONV/exec";
+const baseURL = "Anh/"; // Thư mục ảnh trên GitHub
+const scriptURL = "https://script.google.com/macros/s/AKfycbzhvn2yHUyPGxcwgBsodXUl8D-XDfIFoE_yjq2EPTVUsk9-eeyIZyZ86umLn084sONV/exec"; // Thay bằng URL Apps Script
 
-// --- Dữ liệu ảnh ---
+// --- Dữ liệu hình ảnh ---
 const productErrors = [
   { src:"Banh_Be_Vo.webp", correctError:"Bánh bể vỡ" },
   { src:"Banh_Khuyet.webp", correctError:"Bánh khuyết" },
@@ -103,7 +103,11 @@ const pack2Errors = [
   { src:"Dan_Lech.webp", correctError:"Dán lệch" }
 ];
 
-const errorOptions = { sanpham: productErrors.map(e=>e.correctError), baobi1: pack1Errors.map(e=>e.correctError), baobi2: pack2Errors.map(e=>e.correctError) };
+const errorOptions = {
+  sanpham: productErrors.map(e=>e.correctError),
+  baobi1: pack1Errors.map(e=>e.correctError),
+  baobi2: pack2Errors.map(e=>e.correctError)
+};
 
 let images=[], mode="", current=0, score=0, answered=false, timeLeft=20, timerInterval, playerName="";
 const imgElement=document.getElementById("biscuitImage");
@@ -115,9 +119,6 @@ const menu=document.getElementById("menu");
 const gameContainer=document.getElementById("game-container");
 const errorSelect=document.getElementById("errorSelect");
 
-// Preload ảnh
-function preloadImages(arr){ arr.forEach(img=>{const i=new Image(); i.src=img.src;}); }
-
 function shuffleArray(array){for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[array[i],array[j]]=[array[j],array[i]];}}
 
 function startGame(selectedMode){
@@ -126,41 +127,133 @@ function startGame(selectedMode){
   mode=selectedMode;
   const baseErrors= mode==="sanpham"?productErrors: mode==="baobi1"?pack1Errors:pack2Errors;
   images=baseErrors.map(img=>({...img, src: baseURL+img.src+"?v="+Date.now(), isGood:false}));
-  // Thêm sản phẩm đạt cho sanpham
-  if(mode==="sanpham"){ images.push({src:baseURL+"Banh_Dat_1.webp?v="+Date.now(), isGood:true}); images.push({src:baseURL+"Banh_Dat_2.webp?v="+Date.now(), isGood:true}); }
+  // Thêm sản phẩm đạt
+  images.push({src:baseURL+"Banh_Dat_1.webp?v="+Date.now(), isGood:true});
+  images.push({src:baseURL+"Banh_Dat_2.webp?v="+Date.now(), isGood:true});
   shuffleArray(images);
-  preloadImages(images);
+  images.forEach(img=>{const i=new Image();i.src=img.src;});
   menu.style.display="none";
   gameContainer.style.display="block";
   loadErrorOptions();
   loadImage();
 }
 
-function loadErrorOptions(){ errorSelect.innerHTML="<option value=''>-- Chọn loại lỗi --</option>"; errorOptions[mode].forEach(opt=>{const option=document.createElement("option"); option.value=opt; option.textContent=opt; errorSelect.appendChild(option);}); }
+function loadErrorOptions(){
+  errorSelect.innerHTML="<option value=''>-- Chọn loại lỗi --</option>";
+  errorOptions[mode].forEach(opt=>{
+    const option=document.createElement("option");
+    option.value=opt; option.textContent=opt;
+    errorSelect.appendChild(option);
+  });
+}
 
-function startTimer(){ timerElement.textContent=`Thời gian: ${timeLeft}s`; timerInterval=setInterval(()=>{timeLeft--; timerElement.textContent=`Thời gian: ${timeLeft}s`; if(timeLeft<=0){ clearInterval(timerInterval); resultElement.textContent="⏰ Hết thời gian!"; answered=true; errorSection.style.display="none"; } },1000); }
+function startTimer(){
+  timerElement.textContent=`Thời gian: ${timeLeft}s`;
+  timerInterval=setInterval(()=>{
+    timeLeft--;
+    timerElement.textContent=`Thời gian: ${timeLeft}s`;
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      resultElement.textContent="⏰ Hết thời gian!";
+      answered=true;
+      errorSection.style.display="none";
+    }
+  },1000);
+}
 
-function checkAnswer(isGoodSelected){ if(answered) return; const currentImg=images[current]; if(currentImg.isGood && isGoodSelected){ resultElement.textContent="🎉 Chính xác! Đây là sản phẩm đạt!"; score++; scoreElement.textContent="Điểm: "+score; answered=true; clearInterval(timerInterval); } else if(!currentImg.isGood && !isGoodSelected){ resultElement.textContent="❗ Đây là lỗi, hãy chọn loại lỗi!"; errorSection.style.display="block"; } else { resultElement.textContent="❌ Sai rồi!"; errorSection.style.display="none"; } }
+function checkAnswer(isGoodSelected){
+  if(answered) return;
+  const currentImg=images[current];
+  if(currentImg.isGood && isGoodSelected){
+    resultElement.textContent="🎉 Chính xác! Đây là sản phẩm đạt!";
+    score++; scoreElement.textContent="Điểm: "+score;
+    answered=true; clearInterval(timerInterval);
+  } else if(!currentImg.isGood && !isGoodSelected){
+    resultElement.textContent="❗ Đây là lỗi, hãy chọn loại lỗi!";
+    errorSection.style.display="block";
+  } else {
+    resultElement.textContent="❌ Sai rồi!";
+    errorSection.style.display="none";
+  }
+}
 
-function submitError(){ const selected=errorSelect.value; const currentImg=images[current]; if(!selected){ resultElement.textContent="⚠️ Hãy chọn loại lỗi!"; return; } if(selected===currentImg.correctError){ resultElement.textContent="✅ Chính xác! Bạn đã xác định đúng loại lỗi."; score++; } else { resultElement.textContent="❌ Sai loại lỗi."; } scoreElement.textContent="Điểm: "+score; answered=true; errorSection.style.display="none"; clearInterval(timerInterval); }
+function submitError(){
+  const selected=errorSelect.value;
+  const currentImg=images[current];
+  if(!selected){ resultElement.textContent="⚠️ Hãy chọn loại lỗi!"; return;}
+  if(selected===currentImg.correctError){
+    resultElement.textContent="✅ Chính xác! Bạn đã xác định đúng loại lỗi.";
+    score++;
+  } else { resultElement.textContent="❌ Sai loại lỗi.";}
+  scoreElement.textContent="Điểm: "+score;
+  answered=true;
+  errorSection.style.display="none";
+  clearInterval(timerInterval);
+}
 
-function nextImage(){ if(current<images.length-1){ current++; loadImage();} else { showFinalScore(); } }
+function nextImage(){
+  if(current<images.length-1){ current++; loadImage();}
+  else { showFinalScore();}
+}
 
-function loadImage(){ const currentImg=images[current]; imgElement.src=currentImg.src; resultElement.textContent=""; errorSection.style.display="none"; errorSelect.value=""; answered=false; clearInterval(timerInterval); timeLeft=20; startTimer(); }
+function loadImage(){
+  const currentImg=images[current];
+  imgElement.src=currentImg.src;
+  resultElement.textContent="";
+  errorSection.style.display="none";
+  errorSelect.value="";
+  answered=false;
+  clearInterval(timerInterval);
+  timeLeft=20;
+  startTimer();
+}
 
 async function showFinalScore(){
   clearInterval(timerInterval);
-  gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p><p>Đang lưu kết quả...</p>`;
+
+  gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2>
+    <p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>
+    <p>Đang lưu kết quả...</p>`;
+
   try {
-    await fetch(scriptURL, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ action:"save", ten_nguoi_choi:playerName, muc_choi:mode, diem:score }) });
+    await fetch(scriptURL, { 
+      method:"POST", 
+      headers:{"Content-Type":"application/json"}, 
+      body:JSON.stringify({ 
+        action:"save", 
+        ten_nguoi_choi:playerName, 
+        muc_choi:mode, 
+        diem:score 
+      }) 
+    });
+
     await new Promise(r=>setTimeout(r,500));
+
     const res = await fetch(scriptURL+"?action=getRanking");
-    const ranking = await res.json();
-    let tableHTML=`<h3>🏆 Bảng xếp hạng TOP 10</h3><table><tr><th>Hạng</th><th>Tên</th><th>Mục chơi</th><th>Điểm</th></tr>`;
-    ranking.slice(0,10).forEach((r,i)=>{ tableHTML+=`<tr><td>${i+1}</td><td>${r.name}</td><td>${r.mode}</td><td>${r.score}</td></tr>`; });
-    tableHTML+="</table><br><button onclick='location.reload()'>🔄 Chơi lại</button>";
-    gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>${tableHTML}`;
-  } catch(err){ gameContainer.innerHTML += "<p>⚠️ Lỗi khi tải xếp hạng</p>"; console.error(err); }
+    let ranking = await res.json();
+
+    if(!ranking.find(r=>r.name===playerName && r.mode===mode && r.score===score)){
+      ranking.unshift({name:playerName, mode:mode, score:score});
+      ranking = ranking.sort((a,b)=>b.score-a.score);
+    }
+
+    let tableHTML=`<h3>🏆 Bảng xếp hạng TOP 10</h3>
+      <table><tr><th>Hạng</th><th>Tên</th><th>Mục chơi</th><th>Điểm</th></tr>`;
+
+    ranking.slice(0,10).forEach((r,i)=>{
+      const highlight = (r.name===playerName && r.mode===mode && r.score===score) ? ' style="background:#fffae6;"' : '';
+      tableHTML += `<tr${highlight}><td>${i+1}</td><td>${r.name}</td><td>${r.mode}</td><td>${r.score}</td></tr>`;
+    });
+    tableHTML += "</table><br><button onclick='location.reload()'>🔄 Chơi lại</button>";
+
+    gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2>
+      <p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>
+      ${tableHTML}`;
+
+  } catch(err){
+    gameContainer.innerHTML += "<p>⚠️ Lỗi khi tải xếp hạng</p>";
+    console.error(err);
+  }
 }
 </script>
 </body>
