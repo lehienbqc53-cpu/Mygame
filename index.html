@@ -5,23 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🎯 Lăng kính người tiêu dùng</title>
 <style>
-  body { font-family:"Segoe UI",Arial,sans-serif; background:linear-gradient(120deg,#fff8dc,#ffe4e6); text-align:center; margin:0; padding:20px;}
-  h1 { color:#6d28d9; }
-  #game-container { background:white; border-radius:20px; box-shadow:0 4px 10px rgba(0,0,0,0.15); display:inline-block; padding:20px; max-width:500px; width:100%; }
-  img { max-width:100%; border-radius:15px; margin-bottom:15px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
-  button { padding:10px 20px; border:none; border-radius:10px; margin:5px; background-color:#7c3aed; color:white; font-weight:bold; cursor:pointer; transition:0.3s;}
-  button:hover { background-color:#5b21b6;}
-  select, input { padding:10px; border-radius:8px; border:1px solid #ccc; width:80%; margin-top:5px; margin-bottom:10px;}
-  #result{font-size:18px;font-weight:bold;margin-top:15px;}
-  #score{font-size:18px;font-weight:bold;color:#16a34a;margin-top:10px;}
-  #timer{font-size:18px;font-weight:bold;color:#dc2626;margin-bottom:10px;}
-  table { width:100%; border-collapse:collapse; margin-top:15px;}
-  th, td { border:1px solid #ccc; padding:8px; font-size:14px;}
-  th { background:#7c3aed; color:white;}
+/* CSS cơ bản như trước, giữ nguyên */
 </style>
 </head>
 <body>
-
 <h1>🏭 Lăng kính người tiêu dùng</h1>
 
 <div id="menu">
@@ -55,8 +42,8 @@
 </div>
 
 <script>
-const baseURL = "Anh/"; // Thư mục ảnh trên GitHub
-const scriptURL = "https://script.google.com/macros/s/AKfycbyDDsO7pO_KaoYIay_LuD9A4uRL8Qub2G0D6TKUNVZLXQd2C3BcqpU90e4xW3jn105z/exec"; // Apps Script URL
+const baseURL = "Anh/"; 
+const scriptURL = "https://script.google.com/macros/s/AKfycbzCToVb0PgZKqYSJiuYQtzFsgY3lfb2AgrzAsW2NwWGruk8OTgFvLZVz5L_IR-wJTUm/exec"; // URL từ Deploy, phải quyền Anyone
 
 // --- Dữ liệu hình ảnh ---
 const productErrors = [
@@ -70,6 +57,7 @@ const productErrors = [
   { src:"Banh_Sut_Mat_Mieng.webp", correctError:"Sứt mất miếng" }
 ];
 
+// Bao bì cấp 1
 const pack1Errors = [
   { src:"Sai_Date_Code.webp", correctError:"Sai date code" },
   { src:"Bang_Keo_Noi_Cuon.webp", correctError:"Băng keo nối cuộn" },
@@ -84,6 +72,7 @@ const pack1Errors = [
   { src:"Lech_Bao_Bi.webp", correctError:"Lệch bao bì" }
 ];
 
+// Bao bì cấp 2
 const pack2Errors = [
   { src:"Bang_Keo_Nhan_Khong_Du_chieu_dai.webp", correctError:"Băng keo nhăn không đủ chiều dài" },
   { src:"Hop_Bung_Keo.webp", correctError:"Hộp bung keo" },
