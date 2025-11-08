@@ -49,7 +49,7 @@
 </div>
 
 <script>
-const baseURL = "images/";
+const baseURL = "Anh/"; // Thư mục chứa ảnh trên GitHub
 
 // Danh sách lỗi sản phẩm
 const productErrors = [
@@ -98,8 +98,13 @@ function startGame(selectedMode){
   mode=selectedMode;
   images=(mode==="sanpham"?productErrors:packagingErrors)
     .map(img=>({...img, src: baseURL+img.src, isGood:false}));
-  images.push({src:baseURL+"Banh_Dat_1.webp", isGood:true});
-  images.push({src:baseURL+"Banh_Dat_2.webp", isGood:true});
+
+  // Thêm sản phẩm đạt chỉ cho chế độ sản phẩm
+  if(mode==="sanpham"){
+    images.push({src:baseURL+"Banh_Dat_1.webp", isGood:true});
+    images.push({src:baseURL+"Banh_Dat_2.webp", isGood:true});
+  }
+
   shuffleArray(images);
 
   // Preload ảnh
