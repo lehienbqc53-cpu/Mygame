@@ -40,14 +40,12 @@
     <button onclick="checkAnswer(true)">✅ Đạt</button>
     <button onclick="checkAnswer(false)">❌ Lỗi</button>
   </div>
-
   <div id="errorSection" style="display:none;">
     <p>Chọn loại lỗi:</p>
     <select id="errorSelect"></select>
     <br>
     <button onclick="submitError()">Xác nhận</button>
   </div>
-
   <div id="result"></div>
   <div id="score">Điểm: 0</div>
   <br>
@@ -56,9 +54,10 @@
 
 <script>
 // --- Cấu hình ---
-const baseURL = "https://lehienbqc53-cpu.github.io/Mygame/Anh/"; // Thay <USERNAME> bằng username GitHub
-const scriptURL = "https://script.google.com/macros/s/AKfycbwDof4wCqMSbMmRUOqQtWtlffDGeUr5f3rR4YnEPRqLzju-W2hOzyKsCuLNbZ6mQK_O/exec"; // Web App URL
-// --- Dữ liệu hình ảnh ---
+const baseURL = "https://lehienbqc53-cpu.github.io/Mygame/Anh/"; // Thay <USERNAME>
+const scriptURL = "https://script.google.com/macros/s/AKfycbwDof4wCqMSbMmRUOqQtWtlffDGeUr5f3rR4YnEPRqLzju-W2hOzyKsCuLNbZ6mQK_O/exec"; // URL Web App
+
+// --- Dữ liệu ---
 const productErrors = [
   { src:"Banh_Be_Vo.webp", correctError:"Bánh bể vỡ" },
   { src:"Banh_Khuyet.webp", correctError:"Bánh khuyết" },
@@ -109,7 +108,7 @@ const errorOptions = {
   baobi2: pack2Errors.map(e=>e.correctError)
 };
 
-// --- Biến toàn cục ---
+// --- Biến ---
 let images=[], mode="", current=0, score=0, answered=false, timeLeft=20, timerInterval, playerName="";
 const imgElement=document.getElementById("biscuitImage");
 const resultElement=document.getElementById("result");
@@ -120,8 +119,8 @@ const menu=document.getElementById("menu");
 const gameContainer=document.getElementById("game-container");
 const errorSelect=document.getElementById("errorSelect");
 
-// --- Hàm trộn mảng ---
-function shuffleArray(array){for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[array[i],array[j]]=[array[j],array[i]];}}
+// --- Trộn mảng ---
+function shuffleArray(arr){for(let i=arr.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}}
 
 // --- Bắt đầu game ---
 function startGame(selectedMode){
@@ -141,7 +140,7 @@ function startGame(selectedMode){
   loadImage();
 }
 
-// --- Load options lỗi ---
+// --- Load option lỗi ---
 function loadErrorOptions(){
   errorSelect.innerHTML="<option value=''>-- Chọn loại lỗi --</option>";
   errorOptions[mode].forEach(opt=>{
@@ -167,7 +166,7 @@ function startTimer(){
   },1000);
 }
 
-// --- Kiểm tra đáp án ---
+// --- Kiểm tra ---
 function checkAnswer(isGoodSelected){
   if(answered) return;
   const currentImg=images[current];
@@ -190,10 +189,7 @@ function submitError(){
 }
 
 // --- Ảnh tiếp theo ---
-function nextImage(){
-  if(current<images.length-1){ current++; loadImage();} 
-  else { showFinalScore();}
-}
+function nextImage(){ if(current<images.length-1){ current++; loadImage();} else { showFinalScore();} }
 
 // --- Load ảnh ---
 function loadImage(){
@@ -208,40 +204,31 @@ function loadImage(){
   startTimer();
 }
 
-// --- Hiển thị kết quả và xếp hạng ---
+// --- Kết thúc & bảng xếp hạng ---
 async function showFinalScore(){
   clearInterval(timerInterval);
-  gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p><p>Đang lưu kết quả...</p>`;
+  gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm: <strong>${score}/${images.length}</strong></p><p>Đang lưu kết quả...</p>`;
   try {
-    await new Promise((resolve,reject)=>{
-      const xhr=new XMLHttpRequest();
-      xhr.open("POST",scriptURL);
-      xhr.setRequestHeader("Content-Type","application/json");
-      xhr.onload=()=>xhr.status>=200&&xhr.status<300?resolve(xhr.responseText):reject(new Error("POST lỗi "+xhr.status));
-      xhr.onerror=()=>reject(new Error("Lỗi mạng POST"));
-      xhr.send(JSON.stringify({action:"save",ten_nguoi_choi:playerName,muc_choi:mode,diem:score}));
+    await fetch(scriptURL, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({action:"save",ten_nguoi_choi:playerName,muc_choi:mode,diem:score})
     });
     await new Promise(r=>setTimeout(r,500));
-    const ranking = await new Promise((resolve,reject)=>{
-      const xhr=new XMLHttpRequest();
-      xhr.open("GET",scriptURL+"?action=getRanking");
-      xhr.onload=()=>xhr.status===200?resolve(JSON.parse(xhr.responseText)):reject(new Error("GET lỗi "+xhr.status));
-      xhr.onerror=()=>reject(new Error("Lỗi mạng GET"));
-      xhr.send();
-    });
+    const rankingResp = await fetch(scriptURL+"?action=getRanking");
+    const ranking = await rankingResp.json();
     let tableHTML=`<h3>🏆 Bảng xếp hạng TOP 10</h3><table><tr><th>Hạng</th><th>Tên</th><th>Mục chơi</th><th>Điểm</th></tr>`;
     if(Array.isArray(ranking)){
       ranking.slice(0,10).forEach((r,i)=>{tableHTML+=`<tr><td>${i+1}</td><td>${r.name}</td><td>${r.mode}</td><td>${r.score}</td></tr>`;});
     } else { tableHTML+=`<tr><td colspan='4'>Không có dữ liệu</td></tr>`;}
     tableHTML+="</table><br><button onclick='location.reload()'>🔄 Chơi lại</button>";
-    gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>${tableHTML}`;
+    gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm: <strong>${score}/${images.length}</strong></p>${tableHTML}`;
   } catch(err){
-    gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p><p>⚠️ Lỗi: ${err.message}</p><button onclick='location.reload()'>🔄 Chơi lại</button>`;
+    gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm: <strong>${score}/${images.length}</strong></p><p>⚠️ Lỗi: ${err.message}</p><button onclick='location.reload()'>🔄 Chơi lại</button>`;
     console.error(err);
   }
 }
 </script>
+
 </body>
 </html>
-
-
