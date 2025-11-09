@@ -55,11 +55,11 @@
 </div>
 
 <script>
-// ----------------- CẤU HÌNH -----------------
+// --- Cấu hình ---
 const baseURL = "https://lehienbqc53-cpu.github.io/Mygame/Anh/"; // Thay <USERNAME> bằng username GitHub
-const scriptURL = "https://script.google.com/macros/s/AKfycbyZYAkIvp7xScwLcEL374SDzh5wABaPo3o4dy_sJDalPTH1XU5d5npT1ROI9CSfkTpQ/exec"; // Dán URL Web App Google Apps Script của bạn
+const scriptURL = "https://script.google.com/macros/s/AKfycbxKWLF-e4atMCwpdusjTk_EeQdD5ySRZOtVq3IyAANjtBxa66Gnp_jhl1C62qWKbd3Z/exec"; // URL Web App Google Apps Script
 
-// ----------------- DỮ LIỆU ẢNH -----------------
+// --- Dữ liệu hình ảnh ---
 const productErrors = [
   { src:"Banh_Be_Vo.webp", correctError:"Bánh bể vỡ" },
   { src:"Banh_Khuyet.webp", correctError:"Bánh khuyết" },
@@ -104,13 +104,7 @@ const pack2Errors = [
   { src:"Dan_Lech.webp", correctError:"Dán lệch" }
 ];
 
-const errorOptions = {
-  sanpham: productErrors.map(e=>e.correctError),
-  baobi1: pack1Errors.map(e=>e.correctError),
-  baobi2: pack2Errors.map(e=>e.correctError)
-};
-
-// ----------------- BIẾN TOÀN CỤC -----------------
+// --- Biến toàn cục ---
 let images=[], mode="", current=0, score=0, answered=false, timeLeft=20, timerInterval, playerName="";
 const imgElement=document.getElementById("biscuitImage");
 const resultElement=document.getElementById("result");
@@ -121,29 +115,43 @@ const menu=document.getElementById("menu");
 const gameContainer=document.getElementById("game-container");
 const errorSelect=document.getElementById("errorSelect");
 
-// ----------------- HÀM HỖ TRỢ -----------------
+const errorOptions = {
+  sanpham: productErrors.map(e=>e.correctError),
+  baobi1: pack1Errors.map(e=>e.correctError),
+  baobi2: pack2Errors.map(e=>e.correctError)
+};
+
+// --- Hàm trộn mảng ---
 function shuffleArray(array){for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[array[i],array[j]]=[array[j],array[i]];}}
 
-function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
-
-// ----------------- GAME -----------------
+// --- Bắt đầu game ---
 function startGame(selectedMode){
   playerName=document.getElementById("playerName").value.trim();
-  if(!playerName){alert("Hãy nhập tên!"); return;}
+  if(!playerName){ alert("Hãy nhập tên!"); return; }
   mode=selectedMode;
   const baseErrors= mode==="sanpham"?productErrors: mode==="baobi1"?pack1Errors:pack2Errors;
   const timestamp="?v="+Date.now();
   images=baseErrors.map(img=>({...img, src:baseURL+img.src+timestamp, isGood:false}));
-  images.push({src:baseURL+"Banh_Dat_1.webp"+timestamp, isGood:true});
-  images.push({src:baseURL+"Banh_Dat_2.webp"+timestamp, isGood:true});
+
+  // Thêm ảnh đạt riêng từng chế độ
+  if(mode==="sanpham"){
+    images.push({src:baseURL+"Banh_Dat_1.webp"+timestamp, isGood:true});
+    images.push({src:baseURL+"Banh_Dat_2.webp"+timestamp, isGood:true});
+  } else if(mode==="baobi1"){
+    images.push({src:baseURL+"Bao_Bi_1_Dat.webp"+timestamp, isGood:true});
+  } else if(mode==="baobi2"){
+    images.push({src:baseURL+"Bao_Bi_2_Dat.webp"+timestamp, isGood:true});
+  }
+
   shuffleArray(images);
-  images.forEach(img=>{const i=new Image(); i.src=img.src;});
+  images.forEach(img=>{ const i=new Image(); i.src=img.src; });
   menu.style.display="none";
   gameContainer.style.display="block";
   loadErrorOptions();
   loadImage();
 }
 
+// --- Load options lỗi ---
 function loadErrorOptions(){
   errorSelect.innerHTML="<option value=''>-- Chọn loại lỗi --</option>";
   errorOptions[mode].forEach(opt=>{
@@ -153,6 +161,7 @@ function loadErrorOptions(){
   });
 }
 
+// --- Timer ---
 function startTimer(){
   timerElement.textContent=`Thời gian: ${timeLeft}s`;
   timerInterval=setInterval(()=>{
@@ -168,31 +177,46 @@ function startTimer(){
   },1000);
 }
 
+// --- Kiểm tra đáp án ---
 function checkAnswer(isGoodSelected){
   if(answered) return;
   const currentImg=images[current];
-  if(currentImg.isGood && isGoodSelected){resultElement.textContent="🎉 Chính xác!"; score++; scoreElement.textContent="Điểm: "+score; answered=true; clearInterval(timerInterval);}
-  else if(!currentImg.isGood && !isGoodSelected){resultElement.textContent="❗ Đây là lỗi, chọn loại lỗi!"; errorSection.style.display="block";}
-  else {resultElement.textContent="❌ Sai rồi!"; errorSection.style.display="none";}
+  if(currentImg.isGood){
+    resultElement.textContent="🎉 Chính xác! Đây là ảnh đạt!";
+    score++; scoreElement.textContent="Điểm: "+score;
+    answered=true; clearInterval(timerInterval);
+    errorSection.style.display="none";
+  } else {
+    if(!isGoodSelected){
+      resultElement.textContent="❗ Đây là lỗi, chọn loại lỗi!";
+      errorSection.style.display="block";
+    } else {
+      resultElement.textContent="❌ Sai rồi!";
+      errorSection.style.display="none";
+    }
+  }
 }
 
+// --- Xác nhận lỗi ---
 function submitError(){
   const selected=errorSelect.value;
   const currentImg=images[current];
-  if(!selected){ resultElement.textContent="⚠️ Chọn loại lỗi!"; return;}
-  if(selected===currentImg.correctError){ resultElement.textContent="✅ Chính xác!"; score++;} 
-  else { resultElement.textContent="❌ Sai loại lỗi.";}
+  if(!selected){ resultElement.textContent="⚠️ Chọn loại lỗi!"; return; }
+  if(selected===currentImg.correctError){ resultElement.textContent="✅ Chính xác!"; score++; }
+  else { resultElement.textContent="❌ Sai loại lỗi."; }
   scoreElement.textContent="Điểm: "+score;
   answered=true;
   errorSection.style.display="none";
   clearInterval(timerInterval);
 }
 
+// --- Ảnh tiếp theo ---
 function nextImage(){
-  if(current<images.length-1){ current++; loadImage();} 
-  else { showFinalScore();}
+  if(current<images.length-1){ current++; loadImage(); } 
+  else { showFinalScore(); }
 }
 
+// --- Load ảnh ---
 function loadImage(){
   const currentImg=images[current];
   imgElement.src=currentImg.src;
@@ -205,13 +229,12 @@ function loadImage(){
   startTimer();
 }
 
-// ----------------- HIỂN THỊ KẾT QUẢ VÀ XẾP HẠNG -----------------
+// --- Hiển thị kết quả và xếp hạng ---
 async function showFinalScore(){
   clearInterval(timerInterval);
   gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p><p>Đang lưu kết quả...</p>`;
-  
   try {
-    // POST dữ liệu
+    // POST điểm
     await new Promise((resolve,reject)=>{
       const xhr=new XMLHttpRequest();
       xhr.open("POST",scriptURL);
@@ -221,7 +244,7 @@ async function showFinalScore(){
       xhr.send(JSON.stringify({action:"save",ten_nguoi_choi:playerName,muc_choi:mode,diem:score}));
     });
 
-    await sleep(500);
+    await new Promise(r=>setTimeout(r,500));
 
     // GET bảng xếp hạng
     const ranking = await new Promise((resolve,reject)=>{
@@ -232,17 +255,17 @@ async function showFinalScore(){
       xhr.send();
     });
 
-    // Hiển thị bảng xếp hạng
     let tableHTML=`<h3>🏆 Bảng xếp hạng TOP 10</h3><table><tr><th>Hạng</th><th>Tên</th><th>Mục chơi</th><th>Điểm</th></tr>`;
     if(Array.isArray(ranking)){
       ranking.slice(0,10).forEach((r,i)=>{tableHTML+=`<tr><td>${i+1}</td><td>${r.name}</td><td>${r.mode}</td><td>${r.score}</td></tr>`;});
-    } else { tableHTML+=`<tr><td colspan='4'>Không có dữ liệu</td></tr>`;}
+    } else { tableHTML+=`<tr><td colspan='4'>Không có dữ liệu</td></tr>`; }
     tableHTML+="</table><br><button onclick='location.reload()'>🔄 Chơi lại</button>";
+
     gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>${tableHTML}`;
 
   } catch(err){
     gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p><p>⚠️ Lỗi: ${err.message}</p><button onclick='location.reload()'>🔄 Chơi lại</button>`;
-    console.error("Lỗi lưu/xếp hạng:", err);
+    console.error(err);
   }
 }
 </script>
