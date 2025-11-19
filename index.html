@@ -55,7 +55,7 @@
 <script>
 // --- Cấu hình ---
 const baseURL = "https://lehienbqc53-cpu.github.io/Mygame/Anh/"; 
-const scriptURL = "https://script.google.com/macros/s/AKfycbx1ZdpH3Juj_Q0MQgK5BpaJyr7I0jBWzaso4PP9DFvmWsSQfABLMtaJ-fdEKJqZi5daLQ/exec"; // Thay URL Web App
+const scriptURL = "https://script.google.com/macros/s/AKfycbzM7JZOHdRahzKDw2pNFrDaG6vBdlrp5aiupySWu_ihczlWyVW_2hJUkG00OnT84tve0A/exec"; // Thay URL Web App
 
 // --- Dữ liệu hình ảnh ---
 const productErrors = [
@@ -187,11 +187,21 @@ function nextImage(){ if(current<images.length-1){ current++; loadImage(); } els
 function loadImage(){ const currentImg=images[current]; imgElement.src=currentImg.src; resultElement.textContent=""; errorSection.style.display="none"; errorSelect.value=""; answered=false; clearInterval(timerInterval); timeLeft=20; startTimer(); }
 
 // --- Gửi điểm lên Web App ---
+a// Game Code SỬA
 async function saveScore(playerName, mode, score){
-  try{
-    const res=await fetch(scriptURL,{ method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ten_nguoi_choi:playerName, muc_choi:mode, diem:score}) });
-    await res.json();
-  }catch(err){ console.error("POST lỗi:", err); }
+  try{
+    const res=await fetch(scriptURL,{ 
+          method:"POST", 
+          headers:{"Content-Type":"application/json"}, 
+          body:JSON.stringify({
+              action: "save", // <--- THÊM DÒNG NÀY
+              ten_nguoi_choi:playerName, 
+              muc_choi:mode, 
+              diem:score
+          }) 
+      });
+    await res.json();
+  }catch(err){ console.error("POST lỗi:", err); }
 }
 
 // --- Lấy bảng xếp hạng ---
@@ -217,4 +227,5 @@ async function showFinalScore(){
 </script>
 </body>
 </html>
+
 
