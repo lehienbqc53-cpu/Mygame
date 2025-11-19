@@ -50,14 +50,15 @@
 
   <div id="result"></div>
   <div id="score">Điểm: 0</div>
+  <div id="ranking"></div>
   <br>
   <button onclick="nextImage()">👉 Ảnh tiếp theo</button>
 </div>
 
 <script>
 // --- Cấu hình ---
-const baseURL = "https://lehienbqc53-cpu.github.io/Mygame/Anh/"; // Thay <USERNAME> bằng username GitHub
-const scriptURL = "https://script.google.com/macros/s/AKfycbxKWLF-e4atMCwpdusjTk_EeQdD5ySRZOtVq3IyAANjtBxa66Gnp_jhl1C62qWKbd3Z/exec"; // URL Web App Google Apps Script
+const baseURL = "https://lehienbqc53-cpu.github.io/Mygame/Anh/";
+const scriptURL = "https://script.google.com/macros/s/AKfycbxWmlOjv6KLOBhNfXy7wWSO66Kh0sqlXNLbvEDJIUrTzL-Hip9stOZVrSWjmdjUVfXwqw/exec";
 
 // --- Dữ liệu hình ảnh ---
 const productErrors = [
@@ -114,6 +115,7 @@ const timerElement=document.getElementById("timer");
 const menu=document.getElementById("menu");
 const gameContainer=document.getElementById("game-container");
 const errorSelect=document.getElementById("errorSelect");
+const rankingDiv=document.getElementById("ranking");
 
 const errorOptions = {
   sanpham: productErrors.map(e=>e.correctError),
@@ -133,15 +135,9 @@ function startGame(selectedMode){
   const timestamp="?v="+Date.now();
   images=baseErrors.map(img=>({...img, src:baseURL+img.src+timestamp, isGood:false}));
 
-  // Thêm ảnh đạt riêng từng chế độ
-  if(mode==="sanpham"){
-    images.push({src:baseURL+"Banh_Dat_1.webp"+timestamp, isGood:true});
-    images.push({src:baseURL+"Banh_Dat_2.webp"+timestamp, isGood:true});
-  } else if(mode==="baobi1"){
-    images.push({src:baseURL+"Bao_Bi_Cap_1_Dat.webp"+timestamp, isGood:true});
-  } else if(mode==="baobi2"){
-    images.push({src:baseURL+"Bao_Bi_Cap_2_Dat.webp"+timestamp, isGood:true});
-  }
+  if(mode==="sanpham"){ images.push({src:baseURL+"Banh_Dat_1.webp"+timestamp, isGood:true}); images.push({src:baseURL+"Banh_Dat_2.webp"+timestamp, isGood:true}); }
+  else if(mode==="baobi1"){ images.push({src:baseURL+"Bao_Bi_Cap_1_Dat.webp"+timestamp, isGood:true}); }
+  else if(mode==="baobi2"){ images.push({src:baseURL+"Bao_Bi_Cap_2_Dat.webp"+timestamp, isGood:true}); }
 
   shuffleArray(images);
   images.forEach(img=>{ const i=new Image(); i.src=img.src; });
@@ -235,40 +231,42 @@ async function showFinalScore(){
   gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p><p>Đang lưu kết quả...</p>`;
   try {
     // POST điểm
-    await new Promise((resolve,reject)=>{
-      const xhr=new XMLHttpRequest();
-      xhr.open("POST",scriptURL);
-      xhr.setRequestHeader("Content-Type","application/json");
-      xhr.onload=()=>xhr.status>=200&&xhr.status<300?resolve(xhr.responseText):reject(new Error("POST lỗi "+xhr.status));
-      xhr.onerror=()=>reject(new Error("Lỗi mạng POST"));
-      xhr.send(JSON.stringify({action:"save",ten_nguoi_choi:playerName,muc_choi:mode,diem:score}));
+    await fetch(scriptURL, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({action:"save",ten_nguoi_choi:playerName,muc_choi:mode,diem:score})
     });
-
-    await new Promise(r=>setTimeout(r,500));
 
     // GET bảng xếp hạng
-    const ranking = await new Promise((resolve,reject)=>{
-      const xhr=new XMLHttpRequest();
-      xhr.open("GET",scriptURL+"?action=getRanking");
-      xhr.onload=()=>xhr.status===200?resolve(JSON.parse(xhr.responseText)):reject(new Error("GET lỗi "+xhr.status));
-      xhr.onerror=()=>reject(new Error("Lỗi mạng GET"));
-      xhr.send();
+    const res = await fetch(scriptURL+"?action=getRanking");
+    const ranking = await res.json();
+
+    let tableHTML=`<h3>🏆 Bảng xếp hạng TOP 10</h3>
+    <table>
+    <tr><th>Hạng</th><th>Tên</th><th>Mục chơi</th><th>Điểm</th></tr>`;
+    
+    ranking.slice(0,10).forEach((r,i)=>{
+      tableHTML += `<tr>
+        <td>${i+1}</td>
+        <td>${r.name || r[0]}</td>
+        <td>${r.mode || r[1]}</td>
+        <td>${r.score || r[2]}</td>
+      </tr>`;
     });
+    tableHTML += `</table><br><button onclick='location.reload()'>🔄 Chơi lại</button>`;
 
-    let tableHTML=`<h3>🏆 Bảng xếp hạng TOP 10</h3><table><tr><th>Hạng</th><th>Tên</th><th>Mục chơi</th><th>Điểm</th></tr>`;
-    if(Array.isArray(ranking)){
-      ranking.slice(0,10).forEach((r,i)=>{tableHTML+=`<tr><td>${i+1}</td><td>${r.name}</td><td>${r.mode}</td><td>${r.score}</td></tr>`;});
-    } else { tableHTML+=`<tr><td colspan='4'>Không có dữ liệu</td></tr>`; }
-    tableHTML+="</table><br><button onclick='location.reload()'>🔄 Chơi lại</button>";
-
-    gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>${tableHTML}`;
+    gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2>
+      <p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>
+      ${tableHTML}`;
 
   } catch(err){
-    gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p><p>⚠️ Lỗi: ${err.message}</p><button onclick='location.reload()'>🔄 Chơi lại</button>`;
+    gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2>
+      <p>Điểm của bạn: <strong>${score}/${images.length}</strong></p>
+      <p>⚠️ Lỗi: ${err.message}</p>
+      <button onclick='location.reload()'>🔄 Chơi lại</button>`;
     console.error(err);
   }
 }
 </script>
 </body>
 </html>
-
