@@ -29,9 +29,9 @@
   <h3>Nhập tên của bạn:</h3>
   <input type="text" id="playerName" placeholder="Nhập tên...">
   <h2>Chọn chế độ chơi</h2>
-  <button onclick="startGame('Sản phẩm')">🥯 Sản phẩm</button>
-  <button onclick="startGame('Bao bì cấp 1')">📦 Bao bì cấp 1</button>
-  <button onclick="startGame('Bao bì cấp 2')">📦 Bao bì cấp 2</button>
+  <button onclick="startGame('sanpham')">🥯 Sản phẩm</button>
+  <button onclick="startGame('baobi1')">📦 Bao bì cấp 1</button>
+  <button onclick="startGame('baobi2')">📦 Bao bì cấp 2</button>
 </div>
 
 <div id="game-container" style="display:none;">
@@ -58,16 +58,16 @@
   <h2>🏆 Bảng xếp hạng TOP 10</h2>
   <select id="rankingModeSelect" onchange="updateRankingByMode()">
     <option value="">Tất cả</option>
-    <option value="Sản phẩm">Sản phẩm</option>
-    <option value="Bao bì cấp 1">Bao bì cấp 1</option>
-    <option value="Bao bì cấp 2">Bao bì cấp 2</option>
+    <option value="sanpham">Sản phẩm</option>
+    <option value="baobi1">Bao bì cấp 1</option>
+    <option value="baobi2">Bao bì cấp 2</option>
   </select>
   <table id="rankingTable"></table>
 </div>
 
 <script>
 // --- URL Web App ---
-const scriptURL = "https://script.google.com/macros/s/AKfycbzY2g5F8OmEgS_TNGLPYxkC_upeURQfpdKNesFngSSRdf6Vmqj3nrWqrdFzPSE1pqaGLw/exec"; // Thay URL Web App của bạn
+const scriptURL = "YOUR_WEB_APP_URL_HERE"; // Thay URL Web App của bạn
 
 // --- Dữ liệu ảnh ---
 const baseURL = "https://lehienbqc53-cpu.github.io/Mygame/Anh/";
@@ -172,8 +172,8 @@ function startGame(selectedMode){
   images=baseErrors.map(img=>({...img, src:baseURL+img.src+timestamp, isGood:false}));
 
   // Thêm ảnh đạt
-  if(mode==="Sản phẩm"){ images.push({src:baseURL+"Banh_Dat_1.webp"+timestamp,isGood:true},{src:baseURL+"Banh_Dat_2.webp"+timestamp,isGood:true}); }
-  else if(mode==="Bao bì cấp 1"){ images.push({src:baseURL+"Bao_Bi_Cap_1_Dat.webp"+timestamp,isGood:true}); }
+  if(mode==="sanpham"){ images.push({src:baseURL+"Banh_Dat_1.webp"+timestamp,isGood:true},{src:baseURL+"Banh_Dat_2.webp"+timestamp,isGood:true}); }
+  else if(mode==="baobi1"){ images.push({src:baseURL+"Bao_Bi_Cap_1_Dat.webp"+timestamp,isGood:true}); }
   else{ images.push({src:baseURL+"Bao_Bi_Cap_2_Dat.webp"+timestamp,isGood:true}); }
 
   shuffleArray(images);
@@ -248,5 +248,3 @@ updateRankingByMode();
 </script>
 </body>
 </html>
-
-
