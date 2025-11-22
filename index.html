@@ -53,16 +53,15 @@
   <button onclick="nextImage()">👉 Ảnh tiếp theo</button>
 
   <!-- Bảng xếp hạng -->
-  <div id="ranking-container" style="display:none;">
-    <h2>🏆 Bảng xếp hạng TOP 10</h2>
-    <select id="rankingModeSelect" onchange="updateRankingByMode()">
-      <option value="">Tất cả</option>
-      <option value="Sản phẩm">Sản phẩm</option>
-      <option value="Bao bì cấp 1">Bao bì cấp 1</option>
-      <option value="Bao bì cấp 2">Bao bì cấp 2</option>
-    </select>
-    <table id="rankingTable"></table>
-  </div>
+  <div id="rankingContainer" style="display:none;">
+  <h3>🏆 Bảng xếp hạng TOP 10</h3>
+  <select id="rankingModeSelect" onchange="updateRankingByMode()">
+    <option value="">Tất cả</option>
+    <option value="Sản phẩm">Sản phẩm</option>
+    <option value="Bao bì cấp 1">Bao bì cấp 1</option>
+    <option value="Bao bì cấp 2">Bao bì cấp 2</option>
+  </select>
+  <table id="rankingTable"></table>
 </div>
 
 <script>
@@ -210,27 +209,28 @@ async function updateRankingByMode(){
 }
 
 // Show final score
-async function showFinalScore(){
+async function showFinalScore() {
   clearInterval(timerInterval);
 
-  // Ẩn các phần không cần thiết
+  // Ẩn ảnh và các nút
   imgElement.style.display = "none";
   document.querySelector("#game-container > div:nth-child(1)").style.display = "none"; // timer
-  document.querySelector("#game-container > div:nth-child(3)").style.display = "none"; // nút Đạt/Lỗi
+  document.querySelector("#game-container > div:nth-child(3)").style.display = "none"; // Đạt/Lỗi
   errorSection.style.display = "none";
 
-  // Hiển thị thông báo và điểm
+  // Hiển thị điểm
   resultElement.textContent = "🎉 Hoàn thành!";
   scoreElement.textContent = `Điểm của bạn: ${score}/${images.length}`;
 
-  // Lưu điểm lên Google Sheet
+  // Lưu điểm
   await saveScore(playerName, mode, score);
 
-  // Cập nhật bảng xếp hạng
+  // Cập nhật và hiển thị bảng xếp hạng
   await updateRankingByMode();
+  document.getElementById("rankingContainer").style.display = "block";
 
   // Thêm nút chơi lại
-  if(!document.getElementById("restartBtn")){
+  if (!document.getElementById("restartBtn")) {
     const btn = document.createElement("button");
     btn.id = "restartBtn";
     btn.textContent = "🔄 Chơi lại";
@@ -246,4 +246,5 @@ setInterval(updateRankingByMode,10000);
 </script>
 </body>
 </html>
+
 
