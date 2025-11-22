@@ -5,19 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🎯 Lăng kính người tiêu dùng</title>
 <style>
-  body { font-family:"Segoe UI",Arial,sans-serif; background:linear-gradient(120deg,#fff8dc,#ffe4e6); text-align:center; margin:0; padding:20px;}
-  h1 { color:#6d28d9; }
-  #game-container, #ranking-container { background:white; border-radius:20px; box-shadow:0 4px 10px rgba(0,0,0,0.15); display:inline-block; padding:20px; max-width:500px; width:100%; margin-top:20px;}
-  img { max-width:100%; border-radius:15px; margin-bottom:15px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
-  button { padding:10px 20px; border:none; border-radius:10px; margin:5px; background-color:#7c3aed; color:white; font-weight:bold; cursor:pointer; transition:0.3s;}
-  button:hover { background-color:#5b21b6;}
-  select, input { padding:10px; border-radius:8px; border:1px solid #ccc; width:80%; margin-top:5px; margin-bottom:10px;}
-  #result{font-size:18px;font-weight:bold;margin-top:15px;}
-  #score{font-size:18px;font-weight:bold;color:#16a34a;margin-top:10px;}
-  #timer{font-size:18px;font-weight:bold;color:#dc2626;margin-bottom:10px;}
-  table { width:100%; border-collapse:collapse; margin-top:15px; overflow-x: auto;}
-  th, td { border:1px solid #ccc; padding:8px; font-size:14px;}
-  th { background:#7c3aed; color:white;}
+body { font-family:"Segoe UI",Arial,sans-serif; background:linear-gradient(120deg,#fff8dc,#ffe4e6); text-align:center; margin:0; padding:20px;}
+h1 { color:#6d28d9; }
+#game-container, #ranking-container { background:white; border-radius:20px; box-shadow:0 4px 10px rgba(0,0,0,0.15); display:inline-block; padding:20px; max-width:500px; width:100%; margin-top:20px;}
+img { max-width:100%; border-radius:15px; margin-bottom:15px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+button { padding:10px 20px; border:none; border-radius:10px; margin:5px; background-color:#7c3aed; color:white; font-weight:bold; cursor:pointer; transition:0.3s;}
+button:hover { background-color:#5b21b6;}
+select, input { padding:10px; border-radius:8px; border:1px solid #ccc; width:80%; margin-top:5px; margin-bottom:10px;}
+#result{font-size:18px;font-weight:bold;margin-top:15px;}
+#score{font-size:18px;font-weight:bold;color:#16a34a;margin-top:10px;}
+#timer{font-size:18px;font-weight:bold;color:#dc2626;margin-bottom:10px;}
+table { width:100%; border-collapse:collapse; margin-top:15px; overflow-x: auto;}
+th, td { border:1px solid #ccc; padding:8px; font-size:14px;}
+th { background:#7c3aed; color:white;}
+.highlight { background-color: #fff59d; transition: background-color 1s; }
 </style>
 </head>
 <body>
@@ -67,7 +68,7 @@
 const baseURL = "https://lehienbqc53-cpu.github.io/Mygame/Anh/";
 const scriptURL = "https://script.google.com/macros/s/AKfycbzY2g5F8OmEgS_TNGLPYxkC_upeURQfpdKNesFngSSRdf6Vmqj3nrWqrdFzPSE1pqaGLw/exec";
 
-// --- Dữ liệu hình ảnh (giữ nguyên như bạn trước) ---
+// --- Dữ liệu hình ảnh (giữ nguyên như trước) ---
 const productErrors = [
   { src:"Banh_Be_Vo.webp", correctError:"Bánh bể vỡ" },
   { src:"Banh_Khuyet.webp", correctError:"Bánh khuyết" },
@@ -112,7 +113,6 @@ const pack2Errors = [
   { src:"Dan_Lech.webp", correctError:"Dán lệch" }
 ];
 
-// --- Biến toàn cục ---
 let images=[], mode="", current=0, score=0, answered=false, timeLeft=20, timerInterval, playerName="";
 const imgElement=document.getElementById("biscuitImage");
 const resultElement=document.getElementById("result");
@@ -129,7 +129,6 @@ const errorOptions = {
   baobi2: pack2Errors.map(e=>e.correctError)
 };
 
-// --- Hàm trộn mảng ---
 function shuffleArray(array){for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[array[i],array[j]]=[array[j],array[i]];}}
 
 // --- Bắt đầu game ---
@@ -137,11 +136,10 @@ function startGame(selectedMode){
   playerName=document.getElementById("playerName").value.trim();
   if(!playerName){ alert("Hãy nhập tên!"); return; }
   mode=selectedMode;
-  const baseErrors= mode==="Sản phẩm"?productErrors: mode==="Bao bì cấp 1"?pack1Errors:pack2Errors;
+  const baseErrors= mode==="Sản phẩm"?productErrors: mode==="baobi1"?pack1Errors:pack2Errors;
   const timestamp="?v="+Date.now();
   images=baseErrors.map(img=>({...img, src:baseURL+img.src+timestamp, isGood:false}));
 
-  // Thêm ảnh đạt riêng từng chế độ
   if(mode==="Sản phẩm"){ images.push({src:baseURL+"Banh_Dat_1.webp"+timestamp,isGood:true},{src:baseURL+"Banh_Dat_2.webp"+timestamp,isGood:true}); } 
   else if(mode==="Bao bì cấp 1"){ images.push({src:baseURL+"Bao_Bi_Cap_1_Dat.webp"+timestamp,isGood:true}); } 
   else if(mode==="Bao bì cấp 2"){ images.push({src:baseURL+"Bao_Bi_Cap_2_Dat.webp"+timestamp,isGood:true}); }
@@ -151,7 +149,6 @@ function startGame(selectedMode){
   loadErrorOptions(); loadImage();
 }
 
-// --- Load options lỗi ---
 function loadErrorOptions(){
   errorSelect.innerHTML="<option value=''>-- Chọn loại lỗi --</option>";
   errorOptions[mode].forEach(opt=>{
@@ -161,7 +158,6 @@ function loadErrorOptions(){
   });
 }
 
-// --- Timer ---
 function startTimer(){
   timerElement.textContent=`Thời gian: ${timeLeft}s`;
   timerInterval=setInterval(()=>{
@@ -171,15 +167,25 @@ function startTimer(){
   },1000);
 }
 
-// --- Kiểm tra đáp án ---
 function checkAnswer(isGoodSelected){
   if(answered) return;
   const currentImg=images[current];
-  if(currentImg.isGood){ resultElement.textContent="🎉 Chính xác! Đây là ảnh đạt!"; score++; scoreElement.textContent="Điểm: "+score; answered=true; clearInterval(timerInterval); errorSection.style.display="none";}
-  else{ if(!isGoodSelected){ resultElement.textContent="❗ Đây là lỗi, chọn loại lỗi!"; errorSection.style.display="block"; } else{ resultElement.textContent="❌ Sai rồi!"; errorSection.style.display="none"; } }
+  if(currentImg.isGood){
+    resultElement.textContent="🎉 Chính xác! Đây là ảnh đạt!";
+    score++; scoreElement.textContent="Điểm: "+score;
+    answered=true; clearInterval(timerInterval); errorSection.style.display="none";
+  } else {
+    if(!isGoodSelected){
+      resultElement.textContent="❗ Đây là lỗi, chọn loại lỗi!";
+      errorSection.style.display="block";
+      loadErrorOptions();
+    } else {
+      resultElement.textContent="❌ Sai rồi!";
+      errorSection.style.display="none";
+    }
+  }
 }
 
-// --- Xác nhận lỗi ---
 function submitError(){
   const selected=errorSelect.value;
   const currentImg=images[current];
@@ -190,25 +196,33 @@ function submitError(){
   answered=true; errorSection.style.display="none"; clearInterval(timerInterval);
 }
 
-// --- Ảnh tiếp theo ---
-function nextImage(){ if(current<images.length-1){ current++; loadImage(); } else{ showFinalScore(); } }
+function nextImage(){ 
+  if(current<images.length-1){ current++; loadImage(); } 
+  else{ showFinalScore(); } 
+}
 
-// --- Load ảnh ---
-function loadImage(){ const currentImg=images[current]; imgElement.src=currentImg.src; resultElement.textContent=""; errorSection.style.display="none"; errorSelect.value=""; answered=false; clearInterval(timerInterval); timeLeft=20; startTimer(); }
+function loadImage(){ 
+  const currentImg=images[current]; 
+  imgElement.src=currentImg.src; 
+  resultElement.textContent=""; 
+  errorSection.style.display="none"; 
+  errorSelect.value=""; 
+  answered=false; 
+  clearInterval(timerInterval); 
+  timeLeft=20; 
+  startTimer(); 
+}
 
-// --- Gửi điểm lên Web App ---
 async function saveScore(playerName, mode, score){
   try{
     await fetch(scriptURL,{ 
       method:"POST", 
-      mode:"no-cors",
       headers:{"Content-Type":"application/json"}, 
       body:JSON.stringify({ ten_nguoi_choi:playerName, muc_choi:mode, diem:score })
     });
   }catch(err){ console.error("POST lỗi:", err); }
 }
 
-// --- Lấy bảng xếp hạng ---
 async function getRanking(){
   try{
     const res=await fetch(scriptURL+"?action=getRanking");
@@ -216,7 +230,6 @@ async function getRanking(){
   }catch(err){ console.error("GET lỗi:", err); return []; }
 }
 
-// --- Hiển thị kết quả cuối ---
 async function showFinalScore(){
   clearInterval(timerInterval);
   await saveScore(playerName, mode, score);
@@ -227,7 +240,6 @@ async function showFinalScore(){
   gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p><button onclick='location.reload()'>🔄 Chơi lại</button>`;
 }
 
-// --- Cập nhật bảng xếp hạng theo chế độ ---
 async function updateRankingByMode(){
   const selectedMode=document.getElementById("rankingModeSelect").value;
   const ranking=await getRanking();
@@ -237,13 +249,10 @@ async function updateRankingByMode(){
   document.getElementById("rankingTable").innerHTML=tableHTML;
 }
 
-// --- Tự động refresh mỗi 10 giây ---
-setInterval(updateRankingByMode, 10000);
-updateRankingByMode(); // lần đầu
+// --- Tự động refresh bảng xếp hạng ---
+setInterval(updateRankingByMode,10000);
+updateRankingByMode();
 
 </script>
 </body>
 </html>
-
-
-
