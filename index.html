@@ -126,10 +126,10 @@ const errorOptions = {
 async function saveScore(playerName, mode, score){
   try{
     await fetch(scriptURL, {
-      method:"POST",
-      mode: "no-cors",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({
+      method: "POST",
+      mode: "no-cors",  // quan trọng để POST từ GitHub Pages
+      headers: { "Content-Type":"application/json" },
+      body: JSON.stringify({
         ten_nguoi_choi: playerName,
         muc_choi: mode,
         diem: score
@@ -137,7 +137,6 @@ async function saveScore(playerName, mode, score){
     });
 
     console.log("Đã gửi điểm:", playerName, mode, score);
-
   }catch(err){
     console.error("POST lỗi:", err);
   }
@@ -335,3 +334,4 @@ async function showFinalScore(){
 </script>
 </body>
 </html>
+
