@@ -270,13 +270,16 @@ function loadImage(){
 // --- SAVE SCORE TO GOOGLE SHEET ---
 async function saveScore(playerName, mode, score){
   try{
-    await fetch(scriptURL,{
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({
-        ten_nguoi_choi:playerName,
-        muc_choi:mode,
-        diem:score
+    await fetch(scriptURL, {
+      method: "POST",
+      mode: "no-cors",     // <--- DÒNG QUAN TRỌNG
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ten_nguoi_choi: playerName,
+        muc_choi: mode,
+        diem: score
       })
     });
   }catch(err){
@@ -342,4 +345,5 @@ async function showFinalScore(){
 
 </body>
 </html>
+
 
