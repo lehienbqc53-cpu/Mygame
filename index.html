@@ -29,9 +29,9 @@ th { background:#7c3aed; color:white;}
   <h3>Nhập tên của bạn:</h3>
   <input type="text" id="playerName" placeholder="Nhập tên...">
   <h2>Chọn chế độ chơi</h2>
-  <button onclick="startGame('sanpham')">🥯 Sản phẩm</button>
-  <button onclick="startGame('baobi1')">📦 Bao bì cấp 1</button>
-  <button onclick="startGame('baobi2')">📦 Bao bì cấp 2</button>
+  <button onclick="startGame('Sản phẩm')">🥯 Sản phẩm</button>
+  <button onclick="startGame('Bao bì cấp 1')">📦 Bao bì cấp 1</button>
+  <button onclick="startGame('Bao bì cấp 2')">📦 Bao bì cấp 2</button>
 </div>
 
 <div id="game-container" style="display:none;">
@@ -57,9 +57,9 @@ th { background:#7c3aed; color:white;}
   <h2>🏆 Bảng xếp hạng TOP 10</h2>
   <select id="rankingModeSelect" onchange="updateRankingByMode()">
     <option value="">Tất cả</option>
-    <option value="sanpham">Sản phẩm</option>
-    <option value="baobi1">Bao bì cấp 1</option>
-    <option value="baobi2">Bao bì cấp 2</option>
+    <option value="Sản phẩm">Sản phẩm</option>
+    <option value="Bao bì cấp 1">Bao bì cấp 1</option>
+    <option value="Bao bì cấp 2">Bao bì cấp 2</option>
   </select>
   <table id="rankingTable"></table>
 </div>
@@ -133,12 +133,12 @@ function startGame(selectedMode){
   playerName=document.getElementById("playerName").value.trim();
   if(!playerName){ alert("Hãy nhập tên!"); return; }
   mode=selectedMode;
-  const baseErrors= mode==="sanpham"?productErrors: mode==="baobi1"?pack1Errors:pack2Errors;
+  const baseErrors= mode==="Sản phẩm"?productErrors: mode==="Bao bì cấp 1"?pack1Errors:pack2Errors;
   const timestamp="?v="+Date.now();
   images=baseErrors.map(img=>({...img, src:baseURL+img.src+timestamp, isGood:false}));
-  if(mode==="sanpham"){ images.push({src:baseURL+"Banh_Dat_1.webp"+timestamp,isGood:true},{src:baseURL+"Banh_Dat_2.webp"+timestamp,isGood:true}); } 
-  else if(mode==="baobi1"){ images.push({src:baseURL+"Bao_Bi_Cap_1_Dat.webp"+timestamp,isGood:true}); } 
-  else if(mode==="baobi2"){ images.push({src:baseURL+"Bao_Bi_Cap_2_Dat.webp"+timestamp,isGood:true}); }
+  if(mode==="Sản phẩm"){ images.push({src:baseURL+"Banh_Dat_1.webp"+timestamp,isGood:true},{src:baseURL+"Banh_Dat_2.webp"+timestamp,isGood:true}); } 
+  else if(mode==="Bao bì cấp 1"){ images.push({src:baseURL+"Bao_Bi_Cap_1_Dat.webp"+timestamp,isGood:true}); } 
+  else if(mode==="Bao bì cấp 2"){ images.push({src:baseURL+"Bao_Bi_Cap_2_Dat.webp"+timestamp,isGood:true}); }
   shuffleArray(images);
   menu.style.display="none"; gameContainer.style.display="block";
   loadErrorOptions(); loadImage();
@@ -183,7 +183,6 @@ function checkAnswer(isGoodSelected){
     return;
   }
 
-  // Ảnh lỗi
   if(!isGoodSelected){
     resultElement.textContent = "❗ Đây là lỗi, chọn loại lỗi!";
     errorSection.style.display="block";
@@ -226,14 +225,14 @@ async function saveScore(playerName, mode, score){
     await fetch(scriptURL,{ 
       method:"POST", 
       headers:{"Content-Type":"application/json"}, 
-      body:JSON.stringify({ ten_nguoi_choi:playerName, muc_choi:mode, diem:score })
+      body: JSON.stringify({ ten_nguoi_choi:playerName, muc_choi:mode, diem:score })
     });
   }catch(err){ console.error("POST lỗi:", err); }
 }
 
 async function getRanking(){
   try{
-    const res=await fetch(scriptURL+"?action=getRanking");
+    const res = await fetch(scriptURL + "?action=getRanking");
     return await res.json();
   }catch(err){ console.error("GET lỗi:", err); return []; }
 }
@@ -258,7 +257,6 @@ async function updateRankingByMode(){
 
 setInterval(updateRankingByMode,10000);
 updateRankingByMode();
-
 </script>
 </body>
 </html>
