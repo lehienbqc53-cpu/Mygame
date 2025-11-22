@@ -212,17 +212,30 @@ async function updateRankingByMode(){
 // Show final score
 async function showFinalScore(){
   clearInterval(timerInterval);
-  resultElement.textContent="🎉 Hoàn thành!";
-  scoreElement.textContent=`Điểm của bạn: ${score}/${images.length}`;
+
+  // Ẩn các phần không cần thiết
+  imgElement.style.display = "none";
+  document.querySelector("#game-container > div:nth-child(1)").style.display = "none"; // timer
+  document.querySelector("#game-container > div:nth-child(3)").style.display = "none"; // nút Đạt/Lỗi
+  errorSection.style.display = "none";
+
+  // Hiển thị thông báo và điểm
+  resultElement.textContent = "🎉 Hoàn thành!";
+  scoreElement.textContent = `Điểm của bạn: ${score}/${images.length}`;
+
+  // Lưu điểm lên Google Sheet
   await saveScore(playerName, mode, score);
+
+  // Cập nhật bảng xếp hạng
   await updateRankingByMode();
 
-  // Nút chơi lại
+  // Thêm nút chơi lại
   if(!document.getElementById("restartBtn")){
-    const btn=document.createElement("button");
-    btn.id="restartBtn";
-    btn.textContent="🔄 Chơi lại";
-    btn.onclick=()=>location.reload();
+    const btn = document.createElement("button");
+    btn.id = "restartBtn";
+    btn.textContent = "🔄 Chơi lại";
+    btn.style.marginTop = "15px";
+    btn.onclick = () => location.reload();
     gameContainer.appendChild(btn);
   }
 }
@@ -233,3 +246,4 @@ setInterval(updateRankingByMode,10000);
 </script>
 </body>
 </html>
+
