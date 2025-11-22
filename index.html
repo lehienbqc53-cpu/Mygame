@@ -53,7 +53,7 @@
   <button onclick="nextImage()">👉 Ảnh tiếp theo</button>
 
   <!-- Bảng xếp hạng -->
-  <div id="rankingContainer" style="display:none;">
+  <div id="rankingContainer" style="display:none; margin-top:20px;">
   <h3>🏆 Bảng xếp hạng TOP 10</h3>
   <select id="rankingModeSelect" onchange="updateRankingByMode()">
     <option value="">Tất cả</option>
@@ -63,6 +63,7 @@
   </select>
   <table id="rankingTable"></table>
 </div>
+
 
 <script>
 // --- URL Web App ---
@@ -225,9 +226,9 @@ async function showFinalScore() {
   // Lưu điểm
   await saveScore(playerName, mode, score);
 
-  // Cập nhật và hiển thị bảng xếp hạng
-  await updateRankingByMode();
+  // Hiển thị bảng xếp hạng
   document.getElementById("rankingContainer").style.display = "block";
+  await updateRankingByMode();
 
   // Thêm nút chơi lại
   if (!document.getElementById("restartBtn")) {
@@ -246,5 +247,6 @@ setInterval(updateRankingByMode,10000);
 </script>
 </body>
 </html>
+
 
 
