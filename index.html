@@ -142,9 +142,9 @@ function startGame(selectedMode){
   images=baseErrors.map(img=>({...img, src:baseURL+img.src+timestamp, isGood:false}));
 
   // Thêm ảnh đạt riêng từng chế độ
-  if(mode==="sanpham"){ images.push({src:baseURL+"Banh_Dat_1.webp"+timestamp,isGood:true},{src:baseURL+"Banh_Dat_2.webp"+timestamp,isGood:true}); } 
-  else if(mode==="baobi1"){ images.push({src:baseURL+"Bao_Bi_Cap_1_Dat.webp"+timestamp,isGood:true}); } 
-  else if(mode==="baobi2"){ images.push({src:baseURL+"Bao_Bi_Cap_2_Dat.webp"+timestamp,isGood:true}); }
+  if(mode==="Sản phẩm"){ images.push({src:baseURL+"Banh_Dat_1.webp"+timestamp,isGood:true},{src:baseURL+"Banh_Dat_2.webp"+timestamp,isGood:true}); } 
+  else if(mode==="Bao bì cấp 1"){ images.push({src:baseURL+"Bao_Bi_Cap_1_Dat.webp"+timestamp,isGood:true}); } 
+  else if(mode==="Bao bì cấp 2"){ images.push({src:baseURL+"Bao_Bi_Cap_2_Dat.webp"+timestamp,isGood:true}); }
 
   shuffleArray(images);
   menu.style.display="none"; gameContainer.style.display="block";
@@ -244,3 +244,4 @@ updateRankingByMode(); // lần đầu
 </script>
 </body>
 </html>
+
