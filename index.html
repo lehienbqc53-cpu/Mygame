@@ -18,7 +18,7 @@ select, input { padding:10px; border-radius:8px; border:1px solid #ccc; width:80
 table { width:100%; border-collapse:collapse; margin-top:15px; overflow-x: auto;}
 th, td { border:1px solid #ccc; padding:8px; font-size:14px;}
 th { background:#7c3aed; color:white;}
-#ranking-container { margin-top:20px; text-align:left; }
+#ranking-container { margin-top:20px; text-align:left; display:none; }
 </style>
 </head>
 <body>
@@ -53,8 +53,9 @@ th { background:#7c3aed; color:white;}
   <button onclick="nextImage()">👉 Ảnh tiếp theo</button>
 </div>
 
-<div id="ranking-container" style="display:none;">
-  <h2>🏆 Bảng xếp hạng TOP 10</h2>
+<div id="ranking-container">
+  <h2>🎉 Hoàn thành!</h2>
+  <p id="finalScore"></p>
   <label for="rankingModeSelect">Lọc mục chơi:</label>
   <select id="rankingModeSelect" onchange="updateRankingByMode()">
     <option value="">Tất cả</option>
@@ -125,21 +126,18 @@ const menu=document.getElementById("menu");
 const gameContainer=document.getElementById("game-container");
 const rankingContainer=document.getElementById("ranking-container");
 const errorSelect=document.getElementById("errorSelect");
+const finalScore=document.getElementById("finalScore");
 
 // Mapping từ Sheet mode sang tiếng Việt
 const modeMap = { "sanpham":"Sản phẩm", "baobi1":"Bao bì cấp 1", "baobi2":"Bao bì cấp 2" };
 const errorOptions = { sanpham: productErrors.map(e=>e.correctError), baobi1: pack1Errors.map(e=>e.correctError), baobi2: pack2Errors.map(e=>e.correctError) };
 
-// ----------------------
-// Lưu điểm
 async function saveScore(playerName, mode, score){
   try{
     await fetch(scriptURL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ten_nguoi_choi:playerName, muc_choi:mode, diem:score}) });
   }catch(err){ console.error("POST lỗi:", err); }
 }
 
-// ----------------------
-// Lấy bảng xếp hạng
 async function getRanking(){
   try{
     const res=await fetch(scriptURL+"?action=getRanking");
@@ -147,8 +145,6 @@ async function getRanking(){
   }catch(err){ console.error("GET lỗi:", err); return []; }
 }
 
-// ----------------------
-// Game functions
 function shuffleArray(array){ for(let i=array.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [array[i],array[j]]=[array[j],array[i]]; } }
 
 function startGame(selectedMode){
@@ -206,18 +202,15 @@ function nextImage(){ if(current<images.length-1){ current++; loadImage(); } els
 
 function loadImage(){ const currentImg=images[current]; imgElement.src=currentImg.src; resultElement.textContent=""; errorSection.style.display="none"; errorSelect.value=""; answered=false; clearInterval(timerInterval); timeLeft=20; startTimer(); }
 
-// ----------------------
-// Hiển thị kết quả cuối
 async function showFinalScore(){
   clearInterval(timerInterval);
-  gameContainer.style.display="none"; // ẩn giao diện game
-  rankingContainer.style.display="block"; // hiện bảng xếp hạng
+  gameContainer.style.display="none";
+  rankingContainer.style.display="block";
+  finalScore.textContent=`Điểm của bạn: ${score}/${images.length}`;
   await saveScore(playerName, mode, score);
   await updateRankingByMode();
 }
 
-// ----------------------
-// Update bảng xếp hạng với tiếng Việt
 async function updateRankingByMode(){
   const selectedMode = document.getElementById("rankingModeSelect").value;
   const ranking = await getRanking();
@@ -230,6 +223,9 @@ async function updateRankingByMode(){
   });
   rankingTable.innerHTML = tableHTML;
 }
+
+// Refresh bảng xếp hạng mỗi 10s
+setInterval(()=>{ if(rankingContainer.style.display==="block") updateRankingByMode(); },10000);
 </script>
 </body>
 </html>
