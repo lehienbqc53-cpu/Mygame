@@ -225,11 +225,26 @@ function loadImage(){ const currentImg=images[current]; imgElement.src=currentIm
 // ----------------------
 async function showFinalScore(){
   clearInterval(timerInterval);
-  gameContainer.innerHTML=`<h2>🎉 Hoàn thành!</h2><p>Điểm của bạn: <strong>${score}/${images.length}</strong></p><p>Đang lưu kết quả...</p>`;
+  
+  // Hiển thị điểm cuối
+  document.getElementById("score").textContent = `Điểm cuối: ${score}/${images.length}`;
+
+  // Gọi lưu điểm
   await saveScore(playerName, mode, score);
+
+  // Cập nhật bảng xếp hạng ngay trong game
   await updateRankingByMode();
-  gameContainer.innerHTML+=`<br><button onclick="location.reload()">🔄 Chơi lại</button>`;
+
+  // Thêm nút chơi lại
+  if(!document.getElementById("restartBtn")){
+    const btn = document.createElement("button");
+    btn.id = "restartBtn";
+    btn.textContent = "🔄 Chơi lại";
+    btn.onclick = ()=>location.reload();
+    document.getElementById("game-container").appendChild(btn);
+  }
 }
+
 
 // ----------------------
 // Update bảng xếp hạng
@@ -253,3 +268,4 @@ updateRankingByMode();
 </script>
 </body>
 </html>
+
